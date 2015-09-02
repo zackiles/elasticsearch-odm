@@ -6,14 +6,14 @@ Elasticsearch ODM
 
 This is currently the *only* ODM/ORM library that exists for Elasticsearch on Nodejs. [Waterline](https://github.com/balderdashy/waterline) has a [plugin](https://github.com/UsabilityDynamics/node-waterline-elasticsearch) for Elasticsearch but it is very incomplete and hasn't been updated for years. This library has been battle tested for several years in production, but does require care to configure.
 
-###Use Case
+### Use Case
 - You need an easy and lightweight abstraction for working with elasticsearch.
 - You are used to libraries like Mongoose, or Waterline.
 - You're doing mostly CRUD operations, but still want the power to run advanced queries provided by Elasticsearch.
 - You'd like one library to handle everything, from the connection, to modelling, to building query & filter DSL.
 - You'd like to easily manage parent/child relationships between Elasticsearch documents.
 
-###Quick Start
+### Quick Start
 You'll find the API is intuitive if you've used Mongoose or Waterline.
 
 Example:
