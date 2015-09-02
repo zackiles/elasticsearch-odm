@@ -2,7 +2,11 @@
 
 var logger = require('./lib/logger'),
     Client = require('./lib/client'),
+    Schema = require('./lib/schema'),
     errors = require('./lib/errors'),
+    utils = require('./lib/utils'),
+    MissingArgumentError = errors.MissingArgumentError,
+    ConnectionError = errors.ConnectionErrorr,
     Model = require('./lib/model'),
     defaultMethods = require('./lib/default-methods'),
     defaultMappings = require('./default-mappings'),
@@ -12,26 +16,26 @@ var logger = require('./lib/logger'),
 logger.transports.console.silent = (process.env.NODE_ENV !== 'development');
 
 var db = {
-      host: 'localhost:9200',
-      loggingEnabled: process.env.NODE_ENV === 'development',
-      index: '',
-      client: {}
-    },
-    models = {};
+  host: 'localhost:9200',
+  loggingEnabled: process.env.NODE_ENV === 'development',
+  index: '',
+  client: {}
+};
+var models = {};
 
 function connect(options){
   if(isConnected()) return status(db.index);
 
-  if(_.isEmpty(options)) return errors.missingArgument('options');
+  if(_.isEmpty(options)) return Promise.reject(new MissingArgumentError('options'));
 
   // can pass just the index name, or a client configuration object.
   if(_.isString(options)){
     db.index = options;
   }else if(_.isObject(options)){
-    if(!options.index) return errors.missingArgument('options.index');
+    if(!options.index) return Promise.reject(new MissingArgumentError('options.index'));
     db = _.merge(db, options);
   }else{
-    return errors.missingArgument('options');
+    return Promise.reject(new MissingArgumentError('options'));
   }
 
   db.client = new Client(db);
@@ -53,7 +57,7 @@ function isConnected(){
 }
 
 function status(type){
-  if(!isConnected()) return errors.notConnected();
+  if(!isConnected()) return Promise.reject(new ConnectionError(db.index));
 
   var args = {index: db.index};
   if(type) args.type = type;
@@ -61,7 +65,7 @@ function status(type){
 }
 
 function createIndex(index, mappings){
-  if(!index) return errors.missingArgument('index');
+  if(!index) return Promise.reject(new MissingArgumentError('index'));
   if(!isConnected()) return errors.notConnected();
 
   return db.client.indices.create({
@@ -71,67 +75,50 @@ function createIndex(index, mappings){
 }
 
 function removeIndex(index){
-  if(!index) return errors.missingArgument('index');
+  if(!index) return Promise.reject(new MissingArgumentError('index'));
   if(!isConnected()) return errors.notConnected();
 
   return db.client.indices.delete({index: index}).catch(function(){});
 }
 
-/**
-function model(type){
-  if(!type) return errors.missingArgument('type');
-
-  //if(!isConnected()) return errors.notConnected();
-  // instantiate the model class with a client instance if we haven't already
+function model(modelName, schema){
+  if(!modelName) return Promise.reject(new MissingArgumentError('modelName'));
+  if(schema && !(schema instanceof Schema)) return Promise.reject(new errors.ElasticsearchError('Invalid schema for "'+modelName+'".'));
 
   models[db.index] = models[db.index] || {};
 
-  if(models[db.index] && models[db.index][type]){
+  if(models[db.index] && models[db.index][modelName]){
+
+    // don't overwrite schemas on secondary calls.
+    if(schema && _.isEmpty(models[db.index][modelName].model.schema)){
+      models[db.index][modelName].model.schema = schema;
+    }
+
     // return model from cache if it exists.
-    return models[db.index][type];
+    return models[db.index][modelName];
   }
 
   function modelInstance(data){
     Model.call(this, data);
   }
 
-  modelInstance.prototype = Object.create(Model.prototype);
-  modelInstance.prototype.db = db;
-  var funcs = new modelInstance();
-  for (var i in funcs) {
-    model[i] = funcs[i];
-  }
-  models[db.index][type] = modelInstance;
-  return models[db.index][type];
-}
-*/
-function model(type){
-  if(!type) return errors.missingArgument('type');
+  // return a neweable function object
+  utils.inherits(modelInstance, Model);
 
-  //if(!isConnected()) return errors.notConnected();
-  // instantiate the model class with a client instance if we haven't already
-
-  models[db.index] = models[db.index] || {};
-
-  if(models[db.index] && models[db.index][type]){
-    // return model from cache if it exists.
-    return models[db.index][type];
-  }
-
-  function modelInstance(data){
-    Model.call(this, data);
-  }
-
+  // add crud/query static functions
   _.extend(modelInstance, defaultMethods);
 
-  modelInstance.prototype = Object.create(Model.prototype);
-  modelInstance.db = modelInstance.prototype.db = db;
-  modelInstance.prototype.constructor = models[db.index][type] = modelInstance;
-  modelInstance.__internal = modelInstance.prototype.__internal = {
-    type: type,
+  modelInstance.db = db;
+
+  modelInstance.model = {
+    type: modelName,
+    name: modelName,
     constructor: modelInstance
   };
-  return models[db.index][type];
+  if(schema) modelInstance.model.schema = schema;
+
+  models[db.index][modelName] = modelInstance;
+  return models[db.index][modelName];
 }
 
 module.exports = {
@@ -141,5 +128,6 @@ module.exports = {
   status: status,
   removeIndex: removeIndex,
   createIndex: createIndex,
-  model: model
+  model: model,
+  Schema: Schema
 };
