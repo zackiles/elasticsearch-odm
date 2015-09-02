@@ -1,0 +1,44 @@
+{
+  "settings" : {
+     "index":{
+        "analysis":{
+           "analyzer":{
+              "analyzer_keyword":{
+                 "tokenizer":"keyword",
+                 "filter":"lowercase"
+              }
+           }
+        }
+     }
+   },
+  "mappings": {
+    "_default_": {
+      "_id": {
+        "path": "id"
+      },
+      "_all" : {
+        "enabled" : true
+      },
+      "properties": {
+        "id": {
+          "type": "string",
+          "store": true,
+          "index": "not_analyzed"
+        },
+        "createdOn": {
+          "type": "date",
+          "store": true
+        },
+        "updatedOn": {
+          "type": "date",
+          "store": true
+        },
+        "name": {
+          "type": "string",
+          "store": true,
+          "index": "not_analyzed"
+        }
+      }
+    }
+  }
+}

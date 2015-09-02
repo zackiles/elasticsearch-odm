@@ -1,0 +1,46 @@
+{
+  "name": "elasticsearch-odm",
+  "version": "0.0.1",
+  "description": "Like Mongoose but for Elasticsearch. Define models, preform CRUD operations, and build advanced search queries.",
+  "main": "index.js",
+  "scripts": {
+    "test": "NODE_ENV=test ./node_modules/.bin/mocha --require should --bail --check-leaks ./tests/**.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zackiles/elasticsearch-odm.git"
+  },
+  "keywords": [
+    "elasticsearch",
+    "elastic",
+    "odm",
+    "orm",
+    "database",
+    "model",
+    "query",
+    "search",
+    "driver",
+    "client",
+    "es",
+    "promise",
+    "bulk",
+    "mapping"
+  ],
+  "author": "Zachary Iles <zack.iles@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zackiles/elasticsearch-odm/issues"
+  },
+  "homepage": "https://github.com/zackiles/elasticsearch-odm#readme",
+  "dependencies": {
+    "bluebird": "^2.9.34",
+    "elastic.js": "^1.2.0",
+    "elasticsearch": "^8.0.1",
+    "lodash": "^3.10.1",
+    "winston": "^1.0.1"
+  },
+  "devDependencies": {
+    "mocha": "^2.3.0",
+    "should": "^7.1.0"
+  }
+}
