@@ -48,7 +48,7 @@ elasticsearch.connect('my-index').then(function(){
 - [Model](#model)
   - [`.count()`](#count---object)
   - [`.create(Object data)`](#createobject-data---document)
-  - [`.uodate(String id, Object data)`](#updatestring-id-object-data---document)
+  - [`.update(String id, Object data)`](#updatestring-id-object-data---document)
   - [`.remove(String id)`](#removestring-id)
   - [`.set(String id)`](#setstring-id-object-data---document)
   - [`.find(Object/String match, Object queryOptions)`](#findobjectstring-match-object-queryoptions---document)
