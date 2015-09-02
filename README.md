@@ -161,6 +161,12 @@ Car.find({color: 'blue'}, {sort: ['name', 'createdOn'}).then(function(results){
   console.log(results);
 });
 
+// Find all by passing null or empty object to first argument
+Car.find(null, {sort: 'createdOn'}).then(function(results){
+  console.log(results);
+});
+
+
 // Advanced query using only filters.
 // Returns all cars that arent red, and sorts by name, then createdOn.
 var mustNotFilter = {
