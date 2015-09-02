@@ -33,7 +33,7 @@ elasticsearch.connect('my-index').then(function(){
 });
 ```
 
-###API Reference
+### API Reference
 - [Core](#core)
   - [`.connect(String/Object options)`](#connectstringobject-options---promise)
   - [`.model(String type)`](#modelstring-type---model)
@@ -68,10 +68,10 @@ elasticsearch.connect('my-index').then(function(){
   - [`not`](#mot)
   - [`random`](#random)
 
-####Core
+#### Core
 Core methods can be called directly on the Elasticsearch ODM instance. These include methods to configure, connect, and get information from your Elasticsearch database. Most methods act upon the [official Elasticsearch client](https://www.npmjs.com/package/elasticsearch).
 
-#####`.connect(String/Object options)` -> `Promise`
+##### `.connect(String/Object options)` -> `Promise`
 Can be passed a single index name, or a full configuration object. The default host is localhost:9200 when no host is provided. Once connected, this connection is shared with all Elasticsearch ODM instances, so it only has to be called once.
 
 Example:
@@ -87,56 +87,56 @@ elasticsearch.connect({
 // OR
 elasticsearch.connect('my-index'); // default host localhost:9200
 ```
-#####`.model(String type)` -> `Model`
+##### `.model(String type)` -> `Model`
 Creates and returns a new Model, like calling Mongoose.model(). Takes a type name, in mongodb this is also known as the collection name. This is global function and adds the model to Elasticsearch ODM instance.
 
-#####`.client` -> `Elasticsearch`
+##### `.client` -> `Elasticsearch`
 The raw instance to the underlying [Elasticsearch](https://www.npmjs.com/package/elasticsearch) client. Not really needed, but it's there if you need it, for example to run queries that aren't provided by this library.
 
-####Document
+#### Document
 Like Mongoose, instances of models are considered documents, and are returned from calls like find() & create(). Documents include the following functions to make working with them easier.
 
-#####`.save()` -> `Document`
+##### `.save()` -> `Document`
 Saves or updates the document. If it doesn't exist it is created. Like Mongoose, Elasticsearches internal '_id' is copied to 'id' for you. If you'd like to force a custom id, you can set the id property to something before calling save(). Every document gets a createdOn and updatedOn property set with ISO-8601 formatted time.
 
-#####`.remove()`
+##### `.remove()`
 Removes the document and destroys the cuurrent document instance. No value is resolved, and missing documents are ignored.
 
-#####`.update(Object data)` -> `Document`
+##### `.update(Object data)` -> `Document`
 Partially updates the document. Data passed will be merged with the document, and the updated version will be returned. This also sets the current model instance with the new document.
 
-#####`.set(Object data)` -> `Document`
+##### `.set(Object data)` -> `Document`
 Completely overwrites the document with the data passed, and returns the new document. This also sets the current model instance with the new document.
 
 *Will remove any fields in the document that aren't passed.*
 
-#####`.toJSON()`
+##### `.toJSON()`
 Like Mongoose, strips all non-document properties from the instance and returns a JSON string.
 
-#####`.toObject()`
+##### `.toObject()`
 Like Mongoose, strips all non-document properties from the instance and returns an object.
 
-####Model
+#### Model
 Model definitions returned from .model() in core include several static functions to help query and manage documents. Most functions are similar to Mongoose, but due to the differences in Elasticsearch, querying includes some extra advanced features.
 
-#####`.count()` -> `Object`
+##### `.count()` -> `Object`
 Object returned includes a 'count' property with the number of documents for this Model (also known as _type in Elasticsearch). See [Elasticsearch count](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-count.html).
 
-#####`.create(Object data)` -> `Document`
+##### `.create(Object data)` -> `Document`
 A helper function. Similar to calling new Model(data).save(). Takes an object, and returns the new document.
 
-#####`.update(String id, Object data)` -> `Document`
+##### `.update(String id, Object data)` -> `Document`
 A helper function. Similar to calling new Model().update(data). Takes an id and a partial object to update the document with.
 
-#####`.remove(String id)`
+##### `.remove(String id)`
 Removes the document by it's id. No value is resolved, and missing documents are ignored.
 
-#####`.set(String id, Object data)` -> `Document`
+##### `.set(String id, Object data)` -> `Document`
 Completely overwrites the document matching the id with the data passed, and returns the new document.
 
 *Will remove any fields in the document that aren't passed.*
 
-#####`.find(Object/String match, Object queryOptions)` -> `Document`
+##### `.find(Object/String match, Object queryOptions)` -> `Document`
 Unlike mongoose, searching for exact matches requires the fields in your mapping to be set to 'not_analyzed'.
 *Depending on the [analyzer](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-analyzers.html) in your [mapping](https://www.elastic.co/guide/en/elasticsearch/guide/current/mapping-intro.html),  this method may produce varying results.*
 
@@ -170,39 +170,39 @@ Car.find(null, {not: mustNotFilter, sort: ['name', 'createdOn'}}).then(function(
   console.log(results);
 });
 ```
-#####`.search(Object queryOptions)` -> `Document`
+##### `.search(Object queryOptions)` -> `Document`
 Helper function. Just calls .find() without the first paramter. The first paramater is technically only a 'must' filter, so if you still need that ability set the 'must' paramter like you would the first argument of .find(). All see [Query Options](#query-options).
 
-#####`.findById(String id, Array/String fields)` -> `Document`
+##### `.findById(String id, Array/String fields)` -> `Document`
 Finds a document by id. 'fields' argument is optional and specifies the fields of the document you'd like to include.
 
-#####`.findByIds(Array ids, Array/String fields)` -> `Document`
+##### `.findByIds(Array ids, Array/String fields)` -> `Document`
 Helper function. Same as .findById() but for multiple documents.
 
-#####`.findOne(Object/String match, Array/String fields)` -> `Document`
+##### `.findOne(Object/String match, Array/String fields)` -> `Document`
 First argument is the same as .find(). Second argument is a list of fields to include instead of query options and it only returns the first document matching. This is similar to using the 'must' query option.
 
-#####`.findOneAndRemove(Object/String match)`
+##### `.findOneAndRemove(Object/String match)`
 First argument is the same as .findOne(). Removes a single matching document.
 
-#####`.findAndRemove(Object/String match)`
+##### `.findAndRemove(Object/String match)`
 First argument is the same as .find(). Removes all matching documents and returns nothing even with no matches.
 
-#####`.makeInstance(Object data)` -> `Document`
+##### `.makeInstance(Object data)` -> `Document`
 Helper function. Takes a raw object and creates a document instance out of it. The object would need at least an id property. The document returned can be used normally as if it were returned from other calls like .find().
 
-###Query Options
+### Query Options
 The query options object includes several options that are normally included in mongoose chained queries, like sort, and paging (skip/limit), and also some advanced features from Elasticsearch.
 The Elasticsearch [Query](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html) and [Filter](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-filters.html) DSL is generated using best practices.
 
-#####q
+##### q
 Type: `String`
 
 A string to search all document fields with using Elasticsearch [QueryStringQuery](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html). This can be expensive, so use it sparingly.
 
 *Depending on your Elasticsearch version, you might not be able to combine this with not/must filters*
 
-#####page & per_page
+##### page & per_page
 Type: `Integer`
 
 For most use cases, paging is better suited than skip/limit, so this library includes thhis instead. Page 0/1 are the same thing, so either can be used. Page and per_page both use default when the other is set, page defaults to the first, and per_page defaults to 10.
@@ -218,12 +218,12 @@ For most use cases, paging is better suited than skip/limit, so this library inc
 }
 ```
 
-#####fields
+##### fields
 Type: `Array or String`
 
 A list of fields to include for the documents returned. For example, you could pass 'id' to only return the matching document id's.
 
-#####sort
+##### sort
 Type: `Array or String`
 
 A list of fields to sort on. If multiple fields are passed then they are executed in order. Adding a '-' sign t the start of the field name make it sort descending. Default is ascending.
@@ -235,7 +235,7 @@ Example:
   sort: ['name', '-createdOn'] // created on is sorted descending.
 }
 ```
-#####must
+##### must
 Type: `Object`
 
 An object with key/values that the documents MUST match against. Essentially identical to what is passed to Mongooses .find() and the first argument of .find() in this library.
@@ -250,7 +250,7 @@ Example:
   must: {name: 'Jim'} // All documents matching the name Jim.
 }
 ```
-#####not
+##### not
 Type: `Object`
 
 An object with key/values that the documents must NOT match against. This is essentially a 'must_not' [Bool Filter](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-bool-filter.html).
@@ -269,14 +269,14 @@ Example:
 }
 ```
 
-#####random
+##### random
 Type: `Boolean`
 
 A helper function. It will a randomly seeded function score to the query which will force Elasticsearch to randomly score/sort the documents. This can be expensive, so use sparingly.
 
 *Can't be combined with sort.*
 
-####TODO
+#### TODO
 - Create schemas. Right now it's schemaless.
 - Allow methods to call Elasticsearch facets.
 - Integrate Elasticsearch mappings, and allow dynamic mapping updates.
