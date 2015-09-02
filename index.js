@@ -77,39 +77,8 @@ function removeIndex(index){
   return db.client.indices.delete({index: index}).catch(function(){});
 }
 
-/**
 function model(type){
   if(!type) return errors.missingArgument('type');
-
-  //if(!isConnected()) return errors.notConnected();
-  // instantiate the model class with a client instance if we haven't already
-
-  models[db.index] = models[db.index] || {};
-
-  if(models[db.index] && models[db.index][type]){
-    // return model from cache if it exists.
-    return models[db.index][type];
-  }
-
-  function modelInstance(data){
-    Model.call(this, data);
-  }
-
-  modelInstance.prototype = Object.create(Model.prototype);
-  modelInstance.prototype.db = db;
-  var funcs = new modelInstance();
-  for (var i in funcs) {
-    model[i] = funcs[i];
-  }
-  models[db.index][type] = modelInstance;
-  return models[db.index][type];
-}
-*/
-function model(type){
-  if(!type) return errors.missingArgument('type');
-
-  //if(!isConnected()) return errors.notConnected();
-  // instantiate the model class with a client instance if we haven't already
 
   models[db.index] = models[db.index] || {};
 
