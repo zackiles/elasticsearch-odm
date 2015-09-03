@@ -4,7 +4,7 @@ Elasticsearch ODM
 
 ***Like Mongoose but for Elasticsearch.*** Define models, preform CRUD operations, and build advanced search queries. Most commands and functionality that exist in Mongoose exist in this package. All asynchronous functions use Bluebird Promises instead of callbacks.
 
-This is currently the *only* ODM/ORM library that exists for Elasticsearch on Nodejs. [Waterline](https://github.com/balderdashy/waterline) has a [plugin](https://github.com/UsabilityDynamics/node-waterline-elasticsearch) for Elasticsearch but it is very incomplete and hasn't been updated for years. This library has been battle tested for several years in production, but does require care to configure.
+This is currently the *only* ODM/ORM library that exists for Elasticsearch on Nodejs. [Waterline](https://github.com/balderdashy/waterline) has a [plugin](https://github.com/UsabilityDynamics/node-waterline-elasticsearch) for Elasticsearch but it is incomplete and doesn't exactly harness it's searching power.
 
 ### Use Case
 - You need an easy and lightweight abstraction for working with elasticsearch.
@@ -39,7 +39,7 @@ elasticsearch.connect('my-index').then(function(){
   - [`.model(String type)`](#modelstring-type---model)
   - [`.client`](#client---elasticsearch)
 - [Document](#document)
-  - [`.save()`](#save---document)
+  - [`.save()`](#save-document)
   - [`.remove()`](#remove)
   - [`.update(Object data)`](#updateobject-data---document)
   - [`.set(Object data)`](#setobject-data---document)
