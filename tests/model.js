@@ -1,6 +1,8 @@
 'use-strict';
 
-var elasticsearch = require('../index.js');
+var elasticsearch = require('../index.js'),
+    should = require('should');
+
 var Car = elasticsearch.model('car');
 var car = new Car({color:'Blue'});
 
@@ -122,4 +124,38 @@ describe('Model', function(){
       });
     });
   });
+
+  describe('Model Schemas', function(){
+    var bookSchema = new elasticsearch.Schema({author: String});
+    var Book;
+    var book;
+
+    it('creates a new model with schema', function(done){
+       Book = elasticsearch.model('Book', bookSchema);
+       done();
+    });
+
+    it('validates a good document', function(done){
+      book = new Book({author:'Jim'});
+      var errors = book.validate();
+      should.not.exist(errors);
+      done();
+    });
+
+    it('invalidates a document with wrong field type', function(done){
+      book = new Book({author: 34634634});
+      var errors = book.validate();
+      should.exist(errors);
+      done();
+    });
+
+    it('invalidates a document with missing required field', function(done){
+      var CD =  elasticsearch.model('CD', new elasticsearch.Schema({author: String, name: { type: String, required: true} }));
+      var cd = new CD({author: 'Dr Dre'});
+      var errors = cd.validate();
+      should.exist(errors);
+      done();
+    });
+  });
+
 });

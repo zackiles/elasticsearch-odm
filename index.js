@@ -2,6 +2,7 @@
 
 var logger = require('./lib/logger'),
     Client = require('./lib/client'),
+    Schema = require('./lib/schema'),
     errors = require('./lib/errors'),
     utils = require('./lib/utils'),
     MissingArgumentError = errors.MissingArgumentError,
@@ -80,14 +81,21 @@ function removeIndex(index){
   return db.client.indices.delete({index: index}).catch(function(){});
 }
 
-function model(type){
-  if(!type) return Promise.reject(new MissingArgumentError('type'));
+function model(modelName, schema){
+  if(!modelName) return Promise.reject(new MissingArgumentError('modelName'));
+  if(schema && !(schema instanceof Schema)) return Promise.reject(new errors.ElasticsearchError('Invalid schema for "'+modelName+'".'));
 
   models[db.index] = models[db.index] || {};
 
-  if(models[db.index] && models[db.index][type]){
+  if(models[db.index] && models[db.index][modelName]){
+
+    // don't overwrite schemas on secondary calls.
+    if(schema && _.isEmpty(models[db.index].model.schema)){
+      models[db.index].model.schema = schema;
+    }
+
     // return model from cache if it exists.
-    return models[db.index][type];
+    return models[db.index][modelName];
   }
 
   function modelInstance(data){
@@ -101,14 +109,16 @@ function model(type){
   _.extend(modelInstance, defaultMethods);
 
   modelInstance.db = db;
+
   modelInstance.model = {
-    type: type,
-    name: type,
+    type: modelName,
+    name: modelName,
     constructor: modelInstance
   };
+  if(schema) modelInstance.model.schema = schema;
 
-  models[db.index][type] = modelInstance;
-  return models[db.index][type];
+  models[db.index][modelName] = modelInstance;
+  return models[db.index][modelName];
 }
 
 module.exports = {
@@ -118,5 +128,6 @@ module.exports = {
   status: status,
   removeIndex: removeIndex,
   createIndex: createIndex,
-  model: model
+  model: model,
+  Schema: Schema
 };
