@@ -32,7 +32,6 @@ describe('Validators', function(){
     });
   });
 
-
   describe('.isLong()', function(){
     var long = 9223372036854775808;
     it('shows valid', function(done){

@@ -56,13 +56,9 @@ function types(){
     booleanObjString: { type: 'boolean' },
 
     number: Number,
-    numberString: 'number',
     numberArray: [Number],
-    numberArrayString: ['number'],
     numberObj: { type: Number },
     numberObjArray: { type: [Number] },
-    numberObjArrayString: { type: ['number'] },
-    numberObjString: { type: 'number' },
 
     floatString: 'float',
     floatArray: ['float'],

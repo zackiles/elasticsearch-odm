@@ -14,7 +14,7 @@ describe('Model', function(){
   describe('Instance Methods', function(){
 
     describe('.save()', function(){
-      it('should save a new document', function(done){
+      it('saves a new document', function(done){
         car.save().then(function(doc){
           doc.should.have.property('id');
           doc.should.have.property('createdOn');
@@ -26,7 +26,7 @@ describe('Model', function(){
     });
 
     describe('.update()', function(){
-      it('should update an instance document', function(done){
+      it('updates an instance document', function(done){
         car.update({make:'Ford'}).then(function(doc){
           doc.should.have.property('color', 'Blue');
           doc.should.have.property('make', 'Ford');
@@ -36,10 +36,9 @@ describe('Model', function(){
     });
 
     describe('.remove()', function(){
-      it('should remove an instance document', function(done){
+      it('removes an instance document', function(done){
         car.remove().then(function(doc){
           car.should.not.have.property('id');
-          car.should.have.property('isInstance', false);
           car.should.have.property('isNew', true);
           done();
         }).catch(done);
@@ -49,7 +48,7 @@ describe('Model', function(){
 
   describe('Static Methods', function(){
     describe('.count()', function(){
-      it('should count all documents', function(done){
+      it('counts all documents', function(done){
         var car = new Car({color:'Red'});
         car.save()
         .then(function(){
@@ -65,7 +64,7 @@ describe('Model', function(){
       });
     });
     describe('.create()', function(){
-      it('should create a new document', function(done){
+      it('creates a new document', function(done){
         Car.create({color:'Red'})
         .then(function(doc){
           doc.should.have.property('id');
@@ -77,7 +76,7 @@ describe('Model', function(){
       });
     });
     describe('.find()', function(){
-      it('should find a document by query', function(done){
+      it('finds a document by query', function(done){
         var car = new Car({name:'Honda'});
         car.save()
         .then(function(){
@@ -94,7 +93,7 @@ describe('Model', function(){
       });
     });
     describe('.findAndRemove()', function(){
-      it('should find a document by query and remove it', function(done){
+      it('finds a document by query and remove it', function(done){
         var car = new Car({name:'Ford'});
         car.save()
         .then(function(doc){
@@ -106,7 +105,7 @@ describe('Model', function(){
       });
     });
     describe('.findById()', function(){
-      it('should find a document by id', function(done){
+      it('finds a document by id', function(done){
         var car = new Car({color:'Red'});
         car.save()
         .then(function(doc){

@@ -3,6 +3,9 @@
 var logger = require('./lib/logger'),
     Client = require('./lib/client'),
     errors = require('./lib/errors'),
+    utils = require('./lib/utils'),
+    MissingArgumentError = errors.MissingArgumentError,
+    ConnectionError = errors.ConnectionErrorr,
     Model = require('./lib/model'),
     defaultMethods = require('./lib/default-methods'),
     defaultMappings = require('./default-mappings'),
@@ -12,26 +15,26 @@ var logger = require('./lib/logger'),
 logger.transports.console.silent = (process.env.NODE_ENV !== 'development');
 
 var db = {
-      host: 'localhost:9200',
-      loggingEnabled: process.env.NODE_ENV === 'development',
-      index: '',
-      client: {}
-    },
-    models = {};
+  host: 'localhost:9200',
+  loggingEnabled: process.env.NODE_ENV === 'development',
+  index: '',
+  client: {}
+};
+var models = {};
 
 function connect(options){
   if(isConnected()) return status(db.index);
 
-  if(_.isEmpty(options)) return errors.missingArgument('options');
+  if(_.isEmpty(options)) return Promise.reject(new MissingArgumentError('options'));
 
   // can pass just the index name, or a client configuration object.
   if(_.isString(options)){
     db.index = options;
   }else if(_.isObject(options)){
-    if(!options.index) return errors.missingArgument('options.index');
+    if(!options.index) return Promise.reject(new MissingArgumentError('options.index'));
     db = _.merge(db, options);
   }else{
-    return errors.missingArgument('options');
+    return Promise.reject(new MissingArgumentError('options'));
   }
 
   db.client = new Client(db);
@@ -53,7 +56,7 @@ function isConnected(){
 }
 
 function status(type){
-  if(!isConnected()) return errors.notConnected();
+  if(!isConnected()) return Promise.reject(new ConnectionError(db.index));
 
   var args = {index: db.index};
   if(type) args.type = type;
@@ -61,7 +64,7 @@ function status(type){
 }
 
 function createIndex(index, mappings){
-  if(!index) return errors.missingArgument('index');
+  if(!index) return Promise.reject(new MissingArgumentError('index'));
   if(!isConnected()) return errors.notConnected();
 
   return db.client.indices.create({
@@ -71,14 +74,14 @@ function createIndex(index, mappings){
 }
 
 function removeIndex(index){
-  if(!index) return errors.missingArgument('index');
+  if(!index) return Promise.reject(new MissingArgumentError('index'));
   if(!isConnected()) return errors.notConnected();
 
   return db.client.indices.delete({index: index}).catch(function(){});
 }
 
 function model(type){
-  if(!type) return errors.missingArgument('type');
+  if(!type) return Promise.reject(new MissingArgumentError('type'));
 
   models[db.index] = models[db.index] || {};
 
@@ -91,15 +94,20 @@ function model(type){
     Model.call(this, data);
   }
 
+  // return a neweable function object
+  utils.inherits(modelInstance, Model);
+
+  // add crud/query static functions
   _.extend(modelInstance, defaultMethods);
 
-  modelInstance.prototype = Object.create(Model.prototype);
-  modelInstance.db = modelInstance.prototype.db = db;
-  modelInstance.prototype.constructor = models[db.index][type] = modelInstance;
-  modelInstance.__internal = modelInstance.prototype.__internal = {
+  modelInstance.db = db;
+  modelInstance.model = {
     type: type,
+    name: type,
     constructor: modelInstance
   };
+
+  models[db.index][type] = modelInstance;
   return models[db.index][type];
 }
 

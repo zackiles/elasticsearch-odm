@@ -3,13 +3,11 @@
 var Schema = require('../lib/schema.js'),
     schemaMocks = require('./fixtures/schema-mocks'),
     _ = require('lodash'),
-    should = require('should'),
-    index = 'test-index',
-    type = 'test-type';
+    should = require('should');
 
 describe('Schema', function(){
 
-  it('it detects type definitions', function(done){
+  it('detects type definitions', function(done){
     var schema = new Schema(schemaMocks.types);
     _.forOwn(schemaMocks.types, function(v, k){
       schema.mappings.should.have.property(k);
@@ -18,7 +16,7 @@ describe('Schema', function(){
     done();
   });
 
-  it('it detects single level nested type definitions', function(done){
+  it('detects single level nested type definitions', function(done){
     var schema = new Schema(schemaMocks.nestedSingleLevel);
     _.forOwn(schema.mappings.nestedDocumentOne, function(v, k){
       if(k !=='type') v.should.have.property('type');
@@ -29,23 +27,21 @@ describe('Schema', function(){
     done();
   });
 
-  it('it validates a valid document', function(done){
+  it('validates a valid document', function(done){
     var schema = new Schema({
       name: String,
       createdOn: Date
     });
-    var errors = schema.validate({name: 'Jim', createdOn: new Date()});
+    var errors = schema.validate({name: 'Jim', createdOn: new Date().toISOString()});
     should.not.exist(errors);
     done();
   });
 
-  it('it wont validate an unvalid document', function(done){
+  it('wont validate an unvalid document', function(done){
     var schema = new Schema({
-      name: String,
-      createdOn: Date,
-      hobbies: 'sking'
+      name: String
     });
-    var errors = schema.validate({name: 'Jim', createdOn: new Date()});
+    var errors = schema.validate({name: 44});
     should.exist(errors);
     done();
   });
