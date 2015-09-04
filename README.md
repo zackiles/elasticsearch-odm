@@ -334,7 +334,6 @@ var carSchema = new elasticsearch.Schema({
 ```
 
 #### TODO
-- Create schemas. Right now it's schemaless.
 - Allow methods to call Elasticsearch facets.
 - Integrate Elasticsearch mappings, and allow dynamic mapping updates.
 - Performance tweek application, fix garbage collection issues, and do benchmark tests.
