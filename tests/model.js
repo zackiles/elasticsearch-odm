@@ -18,6 +18,7 @@ describe('Model', function(){
     describe('.save()', function(){
       it('saves a new document', function(done){
         car.save().then(function(doc){
+          doc = doc.toObject();
           doc.should.have.property('id');
           doc.should.have.property('createdOn');
           doc.should.have.property('updatedOn');
