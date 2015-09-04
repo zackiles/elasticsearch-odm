@@ -137,14 +137,14 @@ describe('Model', function(){
 
     it('validates a good document', function(done){
       book = new Book({author:'Jim'});
-      var errors = book.validate();
+      var errors = book.validate(book.toObject());
       should.not.exist(errors);
       done();
     });
 
     it('invalidates a document with wrong field type', function(done){
       book = new Book({author: 34634634});
-      var errors = book.validate();
+      var errors = book.validate(book.toObject());
       should.exist(errors);
       done();
     });
@@ -152,9 +152,19 @@ describe('Model', function(){
     it('invalidates a document with missing required field', function(done){
       var CD =  elasticsearch.model('CD', new elasticsearch.Schema({author: String, name: { type: String, required: true} }));
       var cd = new CD({author: 'Dr Dre'});
-      var errors = cd.validate();
+      var errors = cd.validate(cd.toObject());
       should.exist(errors);
       done();
+    });
+
+    it('it wont save a document with missing required field', function(done){
+      var Dog =  elasticsearch.model('Dog', new elasticsearch.Schema({breed: String}));
+      var dog = new Dog({breed: true});
+      dog.save().then(function(results){
+        done(new Error('The invalid document still saved, it should have thrown an error.'));
+      }).catch(function(err){
+        done();
+      });
     });
   });
 

@@ -37,7 +37,7 @@ describe('Schema', function(){
     done();
   });
 
-  it('wont validate an unvalid document', function(done){
+  it('returns errors for a bad document', function(done){
     var schema = new Schema({
       name: String
     });

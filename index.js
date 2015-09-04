@@ -90,8 +90,8 @@ function model(modelName, schema){
   if(models[db.index] && models[db.index][modelName]){
 
     // don't overwrite schemas on secondary calls.
-    if(schema && _.isEmpty(models[db.index].model.schema)){
-      models[db.index].model.schema = schema;
+    if(schema && _.isEmpty(models[db.index][modelName].model.schema)){
+      models[db.index][modelName].model.schema = schema;
     }
 
     // return model from cache if it exists.
