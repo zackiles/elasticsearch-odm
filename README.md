@@ -4,23 +4,24 @@ Elasticsearch ODM
 
 ***Like Mongoose but for Elasticsearch.*** Define models, preform CRUD operations, and build advanced search queries. Most commands and functionality that exist in Mongoose exist in this package. All asynchronous functions use Bluebird Promises instead of callbacks.
 
-This is currently the *only* ODM/ORM library that exists for Elasticsearch on Nodejs. [Waterline](https://github.com/balderdashy/waterline) has a [plugin](https://github.com/UsabilityDynamics/node-waterline-elasticsearch) for Elasticsearch but it is incomplete and doesn't exactly harness it's searching power.
+This is currently the only ODM/ORM library that exists for Elasticsearch on Nodejs. [Waterline](https://github.com/balderdashy/waterline) has a [plugin](https://github.com/UsabilityDynamics/node-waterline-elasticsearch) for Elasticsearch but it is incomplete and doesn't exactly harness it's searching power.
 [Loopback](https://github.com/strongloop/loopback) also has a storage [plugin](https://github.com/drakerian/loopback-connector-elastic-search), but it also doesn't focus on important parts of Elasticsearch, like mappings and efficient queries. This library automatically handles merging and updating Elasticsearch mappings based on your schema definition.
 
 ## Installation
 
-You know the drill.
+If you currently have [npm elasticsearch](https://www.npmjs.com/package/elasticsearch) installed, you can remove it and access it from the client property in [Core](#core).
 
 ```sh
 $ npm install elasticsearch-odm
 ```
 
-## Use Case
-- You need an easy and lightweight abstraction for working with elasticsearch.
-- You are used to libraries like Mongoose, or Waterline.
-- You're doing mostly CRUD operations, but still want the power to run advanced queries provided by Elasticsearch.
-- You'd like one library to handle everything, from the connection, to modelling, to building query & filter DSL.
-- You'd like to easily manage parent/child relationships between Elasticsearch documents.
+## Features
+- Easy to use API, and safe defaults.
+- Models, Schemas and Elasticsearch specific type mapping.
+- All of the important methods from Mongoose, and none of the extras.
+- Utilizes bulk and scroll features from Elasticsearch when needed.
+- Easy [search queries](#query-options) without generating your own DSL.
+- Automatically handles updating your Elasticsearch mappings based off your models [Schema](#schemas).
 
 ## Quick Start
 You'll find the API is intuitive if you've used Mongoose or Waterline.
@@ -30,12 +31,11 @@ Example (no schema):
 ```js
 var elasticsearch = require('elasticsearch-odm');
 var Car = elasticsearch.model('Car');
-
+var car = new Car({
+  type: 'Ford', color: 'Black'
+});
 elasticsearch.connect('my-index').then(function(){
-
-  var car = new Car({
-    type: 'Ford', color: 'Black'
-  });
+  // be sure to call connect before bootstrapping your app.
   car.save().then(function(document){
     console.log(document);
   });
@@ -57,6 +57,9 @@ var Car = elasticsearch.model('Car', carSchema);
   - [`new Schema(Object options)`](#new-schemaobject-options---schema)
   - [`.model(String modelName)`](#modelstring-modelname-optionalschema-schema---model)
   - [`.client`](#client---elasticsearch)
+  - [`.stats()`](#client---Object)
+  - [`.createIndex(String index, Object mappings)`](#createIndexstring-index-object-mappings)
+  - [`.removeIndex(String index)`](#removeIndexstring-index)
 - [Document](#document)
   - [`.save()`](#save-document)
   - [`.remove()`](#remove)
@@ -69,14 +72,15 @@ var Car = elasticsearch.model('Car', carSchema);
   - [`.create(Object data)`](#createobject-data---document)
   - [`.update(String id, Object data)`](#updatestring-id-object-data---document)
   - [`.remove(String id)`](#removestring-id)
+  - [`.removeByIds(Array ids)`](#removebyidsarray-id)
   - [`.set(String id)`](#setstring-id-object-data---document)
   - [`.find(Object/String match, Object queryOptions)`](#findobjectstring-match-object-queryoptions---document)
   - [`.search(Object queryOptions)`](#searchobject-queryoptions---document)
   - [`.findById(String id, Array/String fields)`](#findbyidstring-id-arraystring-fields---document)
   - [`.findByIds(Array ids, Array/String fields)`](#findbyidsarray-ids-arraystring-fields---document)
   - [`.findOne(Object/String match, Array/String fields)`](#findoneobjectstring-match-arraystring-fields---document)
-  - [`.findOneAndRemove(Object/String match)`](#findoneandremoveobjectstring-match---document)
-  - [`.findAndRemove(Object/String match)`](#findandremoveobjectstring-match)
+  - [`.findAndRemove(Object/String match)`](#findandremoveobjectstring-match---object)
+  - [`.findOneAndRemove(Object/String match)`](#findoneandremoveobjectstring-match---object)
   - [`.makeInstance(Object data)`](#makeinstanceobject-data---document)
 - [Query Options](#query-options)
   - [`q`](#q)
@@ -92,7 +96,11 @@ var Car = elasticsearch.model('Car', carSchema);
 Core methods can be called directly on the Elasticsearch ODM instance. These include methods to configure, connect, and get information from your Elasticsearch database. Most methods act upon the [official Elasticsearch client](https://www.npmjs.com/package/elasticsearch).
 
 ##### `.connect(String/Object options)` -> `Promise`
-Can be passed a single index name, or a full configuration object. The default host is localhost:9200 when no host is provided. Once connected, this connection is shared with all Elasticsearch ODM instances, so it only has to be called once.
+Returns a promise that is reolved when the connection is complete. Can be passed a single index name, or a full configuration object. The default host is localhost:9200 when no host is provided, or just an index name is used.
+This method should be called at the start of your application.
+
+***If the index name does not exist, it is automatically created for you.***
+*You can also add any of the [Elasticsearch specific options](https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/current/configuration.html), like SSL configs.*
 
 Example:
 
@@ -102,7 +110,11 @@ var elasticsearch = require('elasticsearch-odm');
 
 elasticsearch.connect({
   host: 'localhost:9200',
-  index: 'my-index'
+  index: 'my-index',
+  ssl: {
+    ca: fs.readFileSync('./cacert.pem'),
+    rejectUnauthorized: true
+  }
 });
 // OR
 elasticsearch.connect('my-index'); // default host localhost:9200
@@ -115,6 +127,16 @@ Creates and returns a new Model, like calling Mongoose.model(). Takes a type nam
 
 ##### `.client` -> `Elasticsearch`
 The raw instance to the underlying [Elasticsearch](https://www.npmjs.com/package/elasticsearch) client. Not really needed, but it's there if you need it, for example to run queries that aren't provided by this library.
+
+##### `.stats()`
+Returns a promise that is resolved with [index stats](https://www.elastic.co/guide/en/elasticsearch/reference/1.6/indices-stats.html) for the current Elasticsearch connections.
+
+##### `.removeIndex(String index)`
+Takes an index name, and complete destroys the index. Resolves the promise when it's complete.
+
+##### `.createIndex(String index, Object mappings)`
+Takes an index name, and a json string or object representing your [mapping](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html).
+Resolves the promise when it's complete.
 
 #### Document
 Like Mongoose, instances of models are considered documents, and are returned from calls like find() & create(). Documents include the following functions to make working with them easier.
@@ -153,6 +175,9 @@ A helper function. Similar to calling new Model().update(data). Takes an id and 
 
 ##### `.remove(String id)`
 Removes the document by it's id. No value is resolved, and missing documents are ignored.
+
+##### `.removeByIds(Array ids)`
+Help function, see remove. Takes an array of ids.
 
 ##### `.set(String id, Object data)` -> `Document`
 Completely overwrites the document matching the id with the data passed, and returns the new document.
@@ -211,11 +236,11 @@ Helper function. Same as .findById() but for multiple documents.
 ##### `.findOne(Object/String match, Array/String fields)` -> `Document`
 First argument is the same as .find(). Second argument is a list of fields to include instead of query options and it only returns the first document matching. This is similar to using the 'must' query option.
 
-##### `.findOneAndRemove(Object/String match)`
-First argument is the same as .findOne(). Removes a single matching document.
+##### `.findAndRemove(Object/String match)` -> 'Object'
+First argument is the same as .find(). Removes all matching documents and returns their raw objects.
 
-##### `.findAndRemove(Object/String match)`
-First argument is the same as .find(). Removes all matching documents and returns nothing even with no matches.
+##### `.findOneAndRemove(Object/String match)` -> 'Object'
+Same as .findAndRemove(), but removes the first found document.
 
 ##### `.makeInstance(Object data)` -> `Document`
 Helper function. Takes a raw object and creates a document instance out of it. The object would need at least an id property. The document returned can be used normally as if it were returned from other calls like .find().
@@ -334,6 +359,10 @@ var carSchema = new elasticsearch.Schema({
 ```
 
 #### TODO
+- Add [scrolling](https://www.elastic.co/guide/en/elasticsearch/reference/1.6/search-request-scroll.html)
+- Add a wrapper to enable streaming of document results.
+- Add coercion for schema types, and other tpye specific casting options.
+- Add [snapshots/backups](https://www.elastic.co/guide/en/elasticsearch/reference/1.6/modules-snapshots.html)
 - Allow methods to call Elasticsearch facets.
 - Integrate Elasticsearch mappings, and allow dynamic mapping updates.
 - Performance tweek application, fix garbage collection issues, and do benchmark tests.

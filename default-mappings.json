@@ -37,6 +37,11 @@
           "type": "string",
           "store": true,
           "index": "not_analyzed"
+        },
+        "slug": {
+          "type": "string",
+          "store": true,
+          "index": "not_analyzed"
         }
       }
     }
