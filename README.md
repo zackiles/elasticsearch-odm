@@ -5,6 +5,7 @@ Elasticsearch ODM
 ***Like Mongoose but for Elasticsearch.*** Define models, preform CRUD operations, and build advanced search queries. Most commands and functionality that exist in Mongoose exist in this package. All asynchronous functions use Bluebird Promises instead of callbacks.
 
 This is currently the *only* ODM/ORM library that exists for Elasticsearch on Nodejs. [Waterline](https://github.com/balderdashy/waterline) has a [plugin](https://github.com/UsabilityDynamics/node-waterline-elasticsearch) for Elasticsearch but it is incomplete and doesn't exactly harness it's searching power.
+[Loopback](https://github.com/strongloop/loopback) also has a storage [plugin](https://github.com/drakerian/loopback-connector-elastic-search), but it also doesn't focus on important parts of Elasticsearch, like mappings and efficient queries. This library automatically handles merging and updating Elasticsearch mappings based on your schema definition.
 
 ### Use Case
 - You need an easy and lightweight abstraction for working with elasticsearch.
@@ -36,7 +37,7 @@ elasticsearch.connect('my-index').then(function(){
 ### API Reference
 - [Core](#core)
   - [`.connect(String/Object options)`](#connectstringobject-options---promise)
-  - [`.model(String type)`](#modelstring-type---model)
+  - [`.model(String modelName)`](#modelstring-modelname---model)
   - [`.client`](#client---elasticsearch)
 - [Document](#document)
   - [`.save()`](#save-document)
@@ -87,7 +88,7 @@ elasticsearch.connect({
 // OR
 elasticsearch.connect('my-index'); // default host localhost:9200
 ```
-##### `.model(String type)` -> `Model`
+##### `.model(String modelName)` -> `Model`
 Creates and returns a new Model, like calling Mongoose.model(). Takes a type name, in mongodb this is also known as the collection name. This is global function and adds the model to Elasticsearch ODM instance.
 
 ##### `.client` -> `Elasticsearch`
@@ -232,7 +233,7 @@ A list of fields to include for the documents returned. For example, you could p
 ##### sort
 Type: `Array or String`
 
-A list of fields to sort on. If multiple fields are passed then they are executed in order. Adding a '-' sign t the start of the field name make it sort descending. Default is ascending.
+A list of fields to sort on. If multiple fields are passed then they are executed in order. Adding a '-' sign to the start of the field name makes it sort descending. Default is ascending.
 
 Example:
 
