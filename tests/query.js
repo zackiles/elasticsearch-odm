@@ -2,6 +2,7 @@
 
 var Query = require('../lib/query.js'),
     _ = require('lodash'),
+    should = require('should'),
     index = 'test-index',
     type = 'test-type';
 

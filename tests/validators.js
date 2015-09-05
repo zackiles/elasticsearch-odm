@@ -1,6 +1,7 @@
 'use-strict';
 
-var utils = require('../lib/utils');
+var utils = require('../lib/utils'),
+    should = require('should');
 
 
 describe('Validators', function(){

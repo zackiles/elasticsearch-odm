@@ -10,18 +10,18 @@ describe('Schema', function(){
   it('detects type definitions', function(done){
     var schema = new Schema(schemaMocks.types);
     _.forOwn(schemaMocks.types, function(v, k){
-      schema.mappings.should.have.property(k);
-      schema.mappings[k].should.have.property('type');
+      schema.fields.should.have.property(k);
+      schema.fields[k].should.have.property('type');
     });
     done();
   });
 
   it('detects single level nested type definitions', function(done){
     var schema = new Schema(schemaMocks.nestedSingleLevel);
-    _.forOwn(schema.mappings.nestedDocumentOne, function(v, k){
+    _.forOwn(schema.fields.nestedDocumentOne, function(v, k){
       if(k !=='type') v.should.have.property('type');
     });
-    _.forOwn(schema.mappings.nestedDocumentTwo, function(v, k){
+    _.forOwn(schema.fields.nestedDocumentTwo, function(v, k){
       if(k !=='type') v.should.have.property('type');
     });
     done();
@@ -42,6 +42,16 @@ describe('Schema', function(){
       name: String
     });
     var errors = schema.validate({name: 44});
+    should.exist(errors);
+    done();
+  });
+
+  it('returns errors for a missing required field', function(done){
+    var schema = new Schema({
+      name: {type: String, required: true},
+      age: Number
+    });
+    var errors = schema.validate({age: 44});
     should.exist(errors);
     done();
   });

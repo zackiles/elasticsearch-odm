@@ -4,18 +4,18 @@ Elasticsearch ODM
 
 ***Like Mongoose but for Elasticsearch.*** Define models, preform CRUD operations, and build advanced search queries. Most commands and functionality that exist in Mongoose exist in this package. All asynchronous functions use Bluebird Promises instead of callbacks.
 
-This is currently the only ODM/ORM library that exists for Elasticsearch on Nodejs. [Waterline](https://github.com/balderdashy/waterline) has a [plugin](https://github.com/UsabilityDynamics/node-waterline-elasticsearch) for Elasticsearch but it is incomplete and doesn't exactly harness it's searching power.
+This is currently the only ODM/ORM library that exists for Elasticsearch on Node.js. [Waterline](https://github.com/balderdashy/waterline) has a [plugin](https://github.com/UsabilityDynamics/node-waterline-elasticsearch) for Elasticsearch but it is incomplete and doesn't exactly harness it's searching power.
 [Loopback](https://github.com/strongloop/loopback) also has a storage [plugin](https://github.com/drakerian/loopback-connector-elastic-search), but it also doesn't focus on important parts of Elasticsearch, like mappings and efficient queries. This library automatically handles merging and updating Elasticsearch mappings based on your schema definition.
 
-## Installation
+### Installation
 
-If you currently have [npm elasticsearch](https://www.npmjs.com/package/elasticsearch) installed, you can remove it and access it from the client property in [Core](#core).
+If you currently have [npm elasticsearch](https://www.npmjs.com/package/elasticsearch) installed, you can remove it and access it from [client](client---elasticsearch) in this library.
 
 ```sh
 $ npm install elasticsearch-odm
 ```
 
-## Features
+### Features
 - Easy to use API, and safe defaults.
 - Models, Schemas and Elasticsearch specific type mapping.
 - All of the important methods from Mongoose, and none of the extras.
@@ -23,7 +23,7 @@ $ npm install elasticsearch-odm
 - Easy [search queries](#query-options) without generating your own DSL.
 - Automatically handles updating your Elasticsearch mappings based off your models [Schema](#schemas).
 
-## Quick Start
+### Quick Start
 You'll find the API is intuitive if you've used Mongoose or Waterline.
 
 Example (no schema):
@@ -51,15 +51,15 @@ var carSchema = new elasticsearch.Schema({
 });
 var Car = elasticsearch.model('Car', carSchema);
 ```
-### API Reference
+## API Reference
 - [Core](#core)
   - [`.connect(String/Object options)`](#connectstringobject-options---promise)
   - [`new Schema(Object options)`](#new-schemaobject-options---schema)
   - [`.model(String modelName)`](#modelstring-modelname-optionalschema-schema---model)
   - [`.client`](#client---elasticsearch)
-  - [`.stats()`](#client---Object)
-  - [`.createIndex(String index, Object mappings)`](#createIndexstring-index-object-mappings)
-  - [`.removeIndex(String index)`](#removeIndexstring-index)
+  - [`.stats()`](#stats)
+  - [`.createIndex(String index, Object mappings)`](#createindexstring-index-object-mappings)
+  - [`.removeIndex(String index)`](#removeindexstring-index)
 - [Document](#document)
   - [`.save()`](#save-document)
   - [`.remove()`](#remove)
@@ -92,7 +92,7 @@ var Car = elasticsearch.model('Car', carSchema);
   - [`random`](#random)
 - [Schemas](#schemas)
 
-#### Core
+### Core
 Core methods can be called directly on the Elasticsearch ODM instance. These include methods to configure, connect, and get information from your Elasticsearch database. Most methods act upon the [official Elasticsearch client](https://www.npmjs.com/package/elasticsearch).
 
 ##### `.connect(String/Object options)` -> `Promise`
@@ -138,7 +138,7 @@ Takes an index name, and complete destroys the index. Resolves the promise when 
 Takes an index name, and a json string or object representing your [mapping](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html).
 Resolves the promise when it's complete.
 
-#### Document
+### Document
 Like Mongoose, instances of models are considered documents, and are returned from calls like find() & create(). Documents include the following functions to make working with them easier.
 
 ##### `.save()` -> `Document`
@@ -161,7 +161,7 @@ Like Mongoose, strips all non-document properties from the instance and returns 
 ##### `.toObject()`
 Like Mongoose, strips all non-document properties from the instance and returns an object.
 
-#### Model
+### Model
 Model definitions returned from .model() in core include several static functions to help query and manage documents. Most functions are similar to Mongoose, but due to the differences in Elasticsearch, querying includes some extra advanced features.
 
 ##### `.count()` -> `Object`
@@ -326,14 +326,13 @@ Example:
 ##### random
 Type: `Boolean`
 
-A helper function. It will a randomly seeded function score to the query which will force Elasticsearch to randomly score/sort the documents. This can be expensive, so use sparingly.
+A helper function. It will add randomly seeded [function_score](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-function-score-query.html) to the query which will force Elasticsearch to randomly score/sort the documents. This can be expensive, so use sparingly.
 
 *Can't be combined with sort.*
 
-#### Schemas
-Models don't require schemas, but it's best to use then, especially if you'll be making search queries. Elasticsearch-odm will generate and update Elasticsearch with the proper mappings based off your schema definition.
+### Schemas
+Models don't require schemas, but it's best to use them - especially if you'll be making search queries. Elasticsearch-odm will generate and update Elasticsearch with the proper mappings based off your schema definition.
 The schemas are similar to Mongoose, but several new field types have been added which Elasticsearch supports. These are; **float**, **double**, **long**, **short**, **byte**, **binary**, **geo_point**. Generally for numbers, only the Number type is needed (which converts to Elasticsearch integer). You can read more about Elasticsearch types [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-core-types.htm).
-*Right now the only field option supported is 'required'.*
 
 Types can be defined in several ways. The regular mongoose types exist, or you can use the actual type names Elasticsearch uses.
 
@@ -342,18 +341,20 @@ Example:
 // Before saving a document with this schema, your Elasticsearch
 // mappings will automatically be updated.
 
+// Note the various ways you can define a type.
 var carSchema = new elasticsearch.Schema({
   type: String,
   available: Boolean,
   color: {type: String, required: true},
   price: {type: 'double'},
   oldPrices: {type: ['double']},
+  safteyRating: 'float',
   year: Number,
   parts: [String],
   owner: {
     name: String,
     age: Number,
-    location: {type: 'geo_point'}
+    location: {type: 'geo_point', required: true}
   }
 });
 ```
