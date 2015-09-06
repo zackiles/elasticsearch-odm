@@ -264,6 +264,7 @@ For most use cases, paging is better suited than skip/limit, so this library inc
 *Including page or per_page will result in the response being wrapped in a meta data object like the following. You can call toJSON and toObject on this response and it'll call that method on all document instances under the hits property.*
 
 ```js
+// A paged response that is returned when page or per_page is set.
 {
   total: 0, // total documents found for the query.
   hits: [], // a collection of document instances.
