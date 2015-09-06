@@ -12,22 +12,13 @@ function nestedSingleLevel(){
     nestedDocumentOne: {},
     nestedDocumentTwo: {}
   };
-  schema.nestedDocumentOne = types();
-  schema.nestedDocumentTwo = types();
+  schema.nestedDocumentArray = [types()];
+  schema.nestedDocumentObject = types();
   return schema;
 }
 
 function types(){
   return {
-    object: Object,
-    objectString: 'object',
-    objectArray: [Object],
-    objectArrayString: ['object'],
-    objectObj: { type: Object },
-    objectObjArray: { type: [Object] },
-    objectObjArrayString: { type: ['object'] },
-    objectObjString: { type: 'object' },
-
     string: String,
     stringString: 'string',
     stringArray: [String],

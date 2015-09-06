@@ -32,7 +32,7 @@ function connect(options){
     db.index = options;
   }else if(_.isObject(options)){
     if(!options.index) return Promise.reject(new MissingArgumentError('options.index'));
-    db = _.assign(db, options);
+    db = _.extend(db, options);
   }else{
     return Promise.reject(new MissingArgumentError('options'));
   }

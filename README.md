@@ -5,21 +5,21 @@ Elasticsearch ODM
 ***Like Mongoose but for Elasticsearch.*** Define models, preform CRUD operations, and build advanced search queries. Most commands and functionality that exist in Mongoose exist in this package. All asynchronous functions use Bluebird Promises instead of callbacks.
 
 This is currently the only ODM/ORM library that exists for Elasticsearch on Node.js. [Waterline](https://github.com/balderdashy/waterline) has a [plugin](https://github.com/UsabilityDynamics/node-waterline-elasticsearch) for Elasticsearch but it is incomplete and doesn't exactly harness it's searching power.
-[Loopback](https://github.com/strongloop/loopback) also has a storage [plugin](https://github.com/drakerian/loopback-connector-elastic-search), but it also doesn't focus on important parts of Elasticsearch, like mappings and efficient queries. This library automatically handles merging and updating Elasticsearch mappings based on your schema definition.
+[Loopback](https://github.com/strongloop/loopback) also has a storage [plugin](https://github.com/drakerian/loopback-connector-elastic-search), but it also doesn't focus on important parts of Elasticsearch, like mappings and efficient queries. This library automatically handles merging and updating Elasticsearch mappings based on your schema definition. It has been used in production safely for over a year.
 
 ### Installation
 
-If you currently have [npm elasticsearch](https://www.npmjs.com/package/elasticsearch) installed, you can remove it and access it from [client](client---elasticsearch) in this library.
+If you currently have [npm elasticsearch](https://www.npmjs.com/package/elasticsearch) installed, you can remove it and access it from [client](client---elasticsearch) in this library if you still need it.
 
 ```sh
 $ npm install elasticsearch-odm
 ```
 
 ### Features
-- Easy to use API, and safe defaults.
+- Easy to use API that mimics Mongoose, but cuts out the extras.
 - Models, Schemas and Elasticsearch specific type mapping.
-- All of the important methods from Mongoose, and none of the extras.
-- Utilizes bulk and scroll features from Elasticsearch when needed.
+- Add Elasticsearch specific type options to your [Schema](#schemas), like boost, analyzer or score.
+- Seamlessly uilizes bulk and scroll features from Elasticsearch when needed.
 - Easy [search queries](#query-options) without generating your own DSL.
 - Automatically handles updating your Elasticsearch mappings based off your models [Schema](#schemas).
 
@@ -67,6 +67,7 @@ var Car = elasticsearch.model('Car', carSchema);
   - [`.set(Object data)`](#setobject-data---document)
   - [`.toJSON()`](#tojson)
   - [`.toObject()`](#toobject)
+  - [`.toMapping()`](#tomapping)
 - [Model](#model)
   - [`.count()`](#count---object)
   - [`.create(Object data)`](#createobject-data---document)
@@ -161,6 +162,9 @@ Like Mongoose, strips all non-document properties from the instance and returns 
 ##### `.toObject()`
 Like Mongoose, strips all non-document properties from the instance and returns an object.
 
+##### `.toMapping()`
+Returns a complete Elasticsearch mapping for this model based off it's schema. If no schema was used, it returns nothing. Used internally, but it's there if you'd like it.
+
 ### Model
 Model definitions returned from .model() in core include several static functions to help query and manage documents. Most functions are similar to Mongoose, but due to the differences in Elasticsearch, querying includes some extra advanced features.
 
@@ -204,25 +208,24 @@ Car.find({color: 'blue'}).then(function(results){
   console.log(results);
 });
 
+// Simple nested query (for nested documents).
+Car.find({'location.city': 'New York'})
+
 // Advanced query.
-Car.find({color: 'blue'}, {sort: ['name', 'createdOn'}).then(function(results){
-  console.log(results);
-});
+Car.find({color: 'blue'}, {sort: ['name', 'createdOn'})
 
 // Find all by passing null or empty object to first argument
-Car.find(null, {sort: 'createdOn'}).then(function(results){
-  console.log(results);
-});
-
+Car.find(null, {sort: 'createdOn'})
 
 // Advanced query using only filters.
 // Returns all cars that arent red, and sorts by name, then createdOn.
-var mustNotFilter = {
-  color: 'red',
+var queryOptions = {
+  not: {
+    color: 'red'
+  }
+  sort: ['name', 'createdOn'}
 };
-Car.find(null, {not: mustNotFilter, sort: ['name', 'createdOn'}}).then(function(results){
-  console.log(results);
-});
+Car.find(null, queryOptions)
 ```
 ##### `.search(Object queryOptions)` -> `Document`
 Helper function. Just calls .find() without the first paramter. The first paramater is technically only a 'must' filter, so if you still need that ability set the 'must' paramter like you would the first argument of .find(). All see [Query Options](#query-options).
@@ -335,37 +338,59 @@ A helper function. It will add randomly seeded [function_score](https://www.elas
 Models don't require schemas, but it's best to use them - especially if you'll be making search queries. Elasticsearch-odm will generate and update Elasticsearch with the proper mappings based off your schema definition.
 The schemas are similar to Mongoose, but several new field types have been added which Elasticsearch supports. These are; **float**, **double**, **long**, **short**, **byte**, **binary**, **geo_point**. Generally for numbers, only the Number type is needed (which converts to Elasticsearch integer). You can read more about Elasticsearch types [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-core-types.htm).
 
-Types can be defined in several ways. The regular mongoose types exist, or you can use the actual type names Elasticsearch uses.
+***NOTE***
+
+- Types can be defined in several ways. The regular mongoose types exist, or you can use the actual type names Elasticsearch uses.
+- You can also add any of the field options you see for [Elasticsearch Core Types](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-core-types.html)
+- String types will default to `"index": "not_analyzed"`. See [Custom Field Mappings](https://www.elastic.co/guide/en/elasticsearch/guide/current/mapping-intro.html#custom-field-mappings). This is so the .find() call acts like it does in Mongoose by only fidning exact matches, however, this prevents the ability to do full text search on this field. Simply set `{"index":"analyzed"}` if you'd like full text search instead.
 
 Example:
 ```js
 // Before saving a document with this schema, your Elasticsearch
 // mappings will automatically be updated.
 
-// Note the various ways you can define a type.
+// Note the various ways you can define a schema field type.
 var carSchema = new elasticsearch.Schema({
   type: String,
   available: Boolean,
   color: {type: String, required: true},
-  price: {type: 'double'},
+
+  // Enable full-text search of this field.
+  // NOTE: it's better to than use the 'q' paramater in queryOptions
+  // during searches instead of must/not or match when using 'analyzed'
+  description: {type:String, index: 'analyzed'}
+
+  // Ignore_malformed is an Elasticsearch Core Type field option for numbers
+  price: {type: 'double', ignore_malformed: true},
+
   oldPrices: {type: ['double']},
   safteyRating: 'float',
   year: Number,
   parts: [String],
+
+  // A nested object
   owner: {
     name: String,
     age: Number,
+    // force a required field
     location: {type: 'geo_point', required: true}
-  }
+  },
+
+  // A nested object array
+  inspections: [{
+    date: Date,
+    grade: Number
+  }],
 });
 ```
+#### CONTRIBUTING
+This is a library Elasticsearch desperately needed for Node.js. Currently the official npm [elasticsearch](https://www.npmjs.com/package/elasticsearch) client has about 23,000 downloads per week, many of them would benefit from this library instead. Pull requests are welcome. There are [Mocha](https://github.com/mochajs/mocha) and [benchmark](https://www.npmjs.com/package/benchmark) tests in the root directory.
 
 #### TODO
+- Flatten find query matches to dot notaion form for inner objects.
 - Add [scrolling](https://www.elastic.co/guide/en/elasticsearch/reference/1.6/search-request-scroll.html)
 - Add a wrapper to enable streaming of document results.
-- Add coercion for schema types, and other tpye specific casting options.
 - Add [snapshots/backups](https://www.elastic.co/guide/en/elasticsearch/reference/1.6/modules-snapshots.html)
 - Allow methods to call Elasticsearch facets.
-- Integrate Elasticsearch mappings, and allow dynamic mapping updates.
-- Performance tweek application, fix garbage collection issues, and do benchmark tests.
+- Performance tweak application, fix garbage collection issues, and do benchmark tests.
 - Integrate npm 'friendly' for use with expanding/collapsing parent/child documents.

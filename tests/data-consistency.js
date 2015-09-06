@@ -10,7 +10,9 @@ var getUnique = function(){
 };
 
 describe('Data Consistency', function(){
+
   before(function(done){
+    this.timeout(10000);
     elasticsearch.connect('esodm-test').then(function(){
       done();
     }).catch(done);

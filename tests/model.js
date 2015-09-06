@@ -8,6 +8,7 @@ var car = new Car({color:'Blue'});
 
 describe('Model', function(){
   before(function(done){
+    this.timeout(10000);
     elasticsearch.connect('esodm-test').then(function(){
       done();
     }).catch(done);
@@ -45,6 +46,33 @@ describe('Model', function(){
           car.should.have.property('isNew', true);
           done();
         }).catch(done);
+      });
+    });
+
+    describe('.set()', function(){
+      var setCar = new Car({color:'Orange', type: 'Ford'});
+
+      before(function(done){
+        setCar.save().then(function(){
+          return setCar.set({color: 'Maroon'}).then(function(results){
+            done();
+          });
+        })
+      });
+
+      it('sets a document', function(done){
+        setCar.should.have.property('color', 'Maroon');
+        done();
+      });
+
+      it('removes any properties that weren\'t set', function(done){
+        setCar.should.not.have.property('type');
+        done();
+      });
+
+      it('does not remove id property', function(done){
+        setCar.should.have.property('id', setCar.id);
+        done();
       });
     });
   });
@@ -136,6 +164,16 @@ describe('Model', function(){
        done();
     });
 
+    it('creates an elasticsearch mapping', function(done){
+      Book = elasticsearch.model('Book', bookSchema);
+      var mapping = Book.toMapping();
+      mapping.should.have.property(Book.model.type)
+      .and.have.property('properties')
+      .and.have.property('author')
+      .and.have.property('type', 'string');
+       done();
+    });
+
     it('validates a good document', function(done){
       book = new Book({author:'Jim'});
       var errors = book.validate(book.toObject());
@@ -147,6 +185,13 @@ describe('Model', function(){
       book = new Book({author: 34634634});
       var errors = book.validate(book.toObject());
       should.exist(errors);
+      done();
+    });
+
+    it('setting options.type for scehma forces a customt type name', function(done){
+      var schema = new elasticsearch.Schema({author: String}, {type: 'CustomType'})
+      var SomeModel =  elasticsearch.model('SomeModel', schema);
+      SomeModel.model.should.have.property('type', 'CustomType');
       done();
     });
 
