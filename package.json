@@ -36,6 +36,7 @@
     "bluebird": "~2.9.34",
     "dot-object": "^1.1.0",
     "elasticsearch": "~8.0.1",
+    "friendly": "~0.0.19",
     "lodash": "~3.10.1",
     "pluralize": "~1.1.6",
     "winston": "~1.0.1"

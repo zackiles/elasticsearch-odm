@@ -1,15 +1,15 @@
 'use-strict';
 
-var elasticsearch = require('../index.js'),
+var app = require('../index.js'),
     should = require('should');
 
-var Car = elasticsearch.model('car');
+var Car = app.model('car');
 var car = new Car({color:'Blue'});
 
 describe('Model', function(){
   before(function(done){
     this.timeout(10000);
-    elasticsearch.connect('esodm-test').then(function(){
+    app.connect('esodm-test').then(function(){
       done();
     }).catch(done);
   });
@@ -21,6 +21,7 @@ describe('Model', function(){
         car.save().then(function(doc){
           doc = doc.toObject();
           doc.should.have.property('id');
+          car.should.have.property('isNew', false);
           doc.should.have.property('createdOn');
           doc.should.have.property('updatedOn');
           doc.should.have.property('color', 'Blue');
@@ -107,18 +108,30 @@ describe('Model', function(){
       });
     });
     describe('.find()', function(){
-      it('finds a document by query', function(done){
-        var car = new Car({name:'Honda'});
-        car.save()
-        .then(function(){
-          return Car.find({name: car.name});
-        })
+      var car;
+      before(function(done){
+        this.timeout(10000);
+        car = new Car({
+          name:'Honda',
+          parts: [{
+            serial: '0000-ASFBNERHQDF'
+          }]
+        });
+        car.save().then(function(){
+          done();
+        }).catch(done);
+      });
+      it('finds a document by match query', function(done){
+        Car.find({name: car.name})
         .then(function(results){
           results.should.be.instanceof(Array);
           results[0].should.have.property('name', car.name);
-          return car.remove();
+          done();
         })
-        .then(function(){
+        .catch(done);
+      });
+      after(function(done){
+        car.remove().then(function(){
           done();
         }).catch(done);
       });
@@ -155,17 +168,17 @@ describe('Model', function(){
   });
 
   describe('Model Schemas', function(){
-    var bookSchema = new elasticsearch.Schema({author: String});
+    var bookSchema = new app.Schema({author: String});
     var Book;
     var book;
 
     it('creates a new model with schema', function(done){
-       Book = elasticsearch.model('Book', bookSchema);
+       Book = app.model('Book', bookSchema);
        done();
     });
 
     it('creates an elasticsearch mapping', function(done){
-      Book = elasticsearch.model('Book', bookSchema);
+      Book = app.model('Book', bookSchema);
       var mapping = Book.toMapping();
       mapping.should.have.property(Book.model.type)
       .and.have.property('properties')
@@ -189,14 +202,14 @@ describe('Model', function(){
     });
 
     it('setting options.type for scehma forces a customt type name', function(done){
-      var schema = new elasticsearch.Schema({author: String}, {type: 'CustomType'})
-      var SomeModel =  elasticsearch.model('SomeModel', schema);
+      var schema = new app.Schema({author: String}, {type: 'CustomType'})
+      var SomeModel =  app.model('SomeModel', schema);
       SomeModel.model.should.have.property('type', 'CustomType');
       done();
     });
 
     it('invalidates a document with missing required field', function(done){
-      var CD =  elasticsearch.model('CD', new elasticsearch.Schema({author: String, name: { type: String, required: true} }));
+      var CD =  app.model('CD', new app.Schema({author: String, name: { type: String, required: true} }));
       var cd = new CD({author: 'Dr Dre'});
       var errors = cd.validate(cd.toObject());
       should.exist(errors);
@@ -204,7 +217,7 @@ describe('Model', function(){
     });
 
     it('it wont save a document with missing required field', function(done){
-      var Dog =  elasticsearch.model('Dog', new elasticsearch.Schema({breed: String}));
+      var Dog =  app.model('Dog', new app.Schema({breed: String}));
       var dog = new Dog({breed: true});
       dog.save().then(function(results){
         done(new Error('The invalid document still saved, it should have thrown an error.'));

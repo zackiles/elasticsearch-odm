@@ -25,6 +25,30 @@ describe('Query', function(){
       done();
     });
 
+    it('nested Must/Not queries are flattened to dot-notation', function(done){
+      var req = Query.parseRequest(index, type, null, {must: {
+        comments: {
+          username: 'Jim'
+        }
+      }});
+      req.should.have.property('body')
+        .and.have.property('query')
+        .and.have.property('filtered')
+        .and.have.property('filter')
+        .and.have.property('bool')
+        .and.have.property('must')
+        .and.have.property('term')
+        .and.have.property('comments.username', 'Jim');
+      done();
+    });
+
+    it('if matches argument is a string it transforms to QueryStringQuery', function(done){
+      var req = Query.parseRequest(index, type, 'Jim');
+      req.should.have.property('body')
+        .and.have.property('query', { query_string: { query: 'Jim' } });
+      done();
+    });
+
     it('creates a Random query', function(done){
       var req = Query.parseRequest(index, type, null, {random: true});
       req.body.query.should.have.property('function_score')

@@ -27,7 +27,7 @@ describe('Schema', function(){
     done();
   });
 
-  it('validates a valid document', function(done){
+  it('validates a good document', function(done){
     var schema = new Schema({
       name: String,
       createdOn: Date
@@ -78,7 +78,7 @@ describe('Schema', function(){
     done();
   });
 
-  it('generates an Elasticsearch properties mapping', function(done){
+  it('returns an Elasticsearch properties mapping', function(done){
     var schema = new Schema({
       name: String,
       company: {

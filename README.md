@@ -2,10 +2,10 @@ Elasticsearch ODM
 =========
 [![npm version](https://badge.fury.io/js/elasticsearch-odm.svg)](http://badge.fury.io/js/elasticsearch-odm)
 
-***Like Mongoose but for Elasticsearch.*** Define models, preform CRUD operations, and build advanced search queries. Most commands and functionality that exist in Mongoose exist in this package. All asynchronous functions use Bluebird Promises instead of callbacks.
+***Like Mongoose but for Elasticsearch.*** Define models, preform CRUD operations, and build advanced search queries. Most commands and functionality that exist in Mongoose exist in this library. All asynchronous functions use Bluebird Promises instead of callbacks.
 
 This is currently the only ODM/ORM library that exists for Elasticsearch on Node.js. [Waterline](https://github.com/balderdashy/waterline) has a [plugin](https://github.com/UsabilityDynamics/node-waterline-elasticsearch) for Elasticsearch but it is incomplete and doesn't exactly harness it's searching power.
-[Loopback](https://github.com/strongloop/loopback) also has a storage [plugin](https://github.com/drakerian/loopback-connector-elastic-search), but it also doesn't focus on important parts of Elasticsearch, like mappings and efficient queries. This library automatically handles merging and updating Elasticsearch mappings based on your schema definition. It has been used in production safely for over a year.
+[Loopback](https://github.com/strongloop/loopback) has a storage [plugin](https://github.com/drakerian/loopback-connector-elastic-search), but it also doesn't focus on important parts of Elasticsearch, such as mappings and efficient queries. This library automatically handles merging and updating Elasticsearch mappings based on your schema definition. It has been used in production safely for over a year.
 
 ### Installation
 
@@ -19,9 +19,9 @@ $ npm install elasticsearch-odm
 - Easy to use API that mimics Mongoose, but cuts out the extras.
 - Models, Schemas and Elasticsearch specific type mapping.
 - Add Elasticsearch specific type options to your [Schema](#schemas), like boost, analyzer or score.
-- Seamlessly uilizes bulk and scroll features from Elasticsearch when needed.
+- Utilizes bulk and scroll features from Elasticsearch when needed.
 - Easy [search queries](#query-options) without generating your own DSL.
-- Automatically handles updating your Elasticsearch mappings based off your models [Schema](#schemas).
+- Seamlessly handles updating your Elasticsearch mappings based off your models [Schema](#schemas).
 
 ### Quick Start
 You'll find the API is intuitive if you've used Mongoose or Waterline.
@@ -208,7 +208,7 @@ Car.find({color: 'blue'}).then(function(results){
   console.log(results);
 });
 
-// Simple nested query (for nested documents).
+// Simple nested query (for nested documents/properties).
 Car.find({'location.city': 'New York'})
 
 // Advanced query.
