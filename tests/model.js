@@ -109,8 +109,8 @@ describe('Model', function(){
     });
     describe('.find()', function(){
       var car;
+      this.timeout(10000);
       before(function(done){
-        this.timeout(10000);
         car = new Car({
           name:'Honda',
           parts: [{
@@ -123,6 +123,17 @@ describe('Model', function(){
       });
       it('finds a document by match query', function(done){
         Car.find({name: car.name})
+        .then(function(results){
+          results.should.be.instanceof(Array);
+          results[0].should.have.property('name', car.name);
+          done();
+        })
+        .catch(done);
+      });
+      it('finds a document using query chaining', function(done){
+        Car.find()
+        .sort('createdOn')
+        .must({name: car.name})
         .then(function(results){
           results.should.be.instanceof(Array);
           results[0].should.have.property('name', car.name);

@@ -7,7 +7,7 @@ var app = require('../index'),
 var Car = app.model('Car');
 var car;
 
-describe('Query Response', function(){
+describe('Query Promise', function(){
   before(function(done){
     this.timeout(10000);
     app.connect('esodm-test').then(function(){
@@ -20,16 +20,14 @@ describe('Query Response', function(){
     .catch(done);
   });
 
-  it('wraps a response', function(done){
+  it('wraps a .find() query', function(done){
     Car.find({name: car.name})
     .sort('createdOn')
     .then(function(res){
-      console.log(res);
       res.should.be.instanceof(Array);
       res[0].should.have.property('name', car.name);
       done();
     });
-    //console.log(query);
   });
 
   after(function(done){
