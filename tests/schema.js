@@ -7,16 +7,15 @@ var Schema = require('../lib/schema.js'),
 
 describe('Schema', function(){
 
-  it('detects type definitions', function(done){
+  it('detects type definitions', function(){
     var schema = new Schema(schemaMocks.types);
     _.forOwn(schemaMocks.types, function(v, k){
       schema.fields.should.have.property(k)
         .and.have.property('type');
     });
-    done();
   });
 
-  it('detects single level nested type definitions', function(done){
+  it('detects single level nested type definitions', function(){
     var schema = new Schema(schemaMocks.nestedSingleLevel);
     _.forOwn(schema.fields.nestedDocumentArray, function(v, k){
       if(k !=='type') v.should.have.property('type');
@@ -24,39 +23,35 @@ describe('Schema', function(){
     _.forOwn(schema.fields.nestedDocumentObject, function(v, k){
       if(k !=='type') v.should.have.property('type');
     });
-    done();
   });
 
-  it('validates a good document', function(done){
+  it('validates a good document', function(){
     var schema = new Schema({
       name: String,
       createdOn: Date
     });
     var errors = schema.validate({name: 'Jim', createdOn: new Date().toISOString()});
     should.not.exist(errors);
-    done();
   });
 
-  it('returns errors for a bad document', function(done){
+  it('returns errors for a bad document', function(){
     var schema = new Schema({
       name: String
     });
     var errors = schema.validate({name: 44});
     should.exist(errors);
-    done();
   });
 
-  it('returns multiple errors for a bad document', function(done){
+  it('returns multiple errors for a bad document', function(){
     var schema = new Schema({
       name: String,
       age: Number
     });
     var errors = schema.validate({name: 44, age: '2343'});
     errors.should.be.an.instanceOf(Array).with.lengthOf(2);
-    done();
   });
 
-  it('returns errors for a bad nested document', function(done){
+  it('returns errors for a bad nested document', function(){
     var schema = new Schema({
       name: String,
       company: {
@@ -65,20 +60,18 @@ describe('Schema', function(){
     });
     var errors = schema.validate({name: 'Bob', company:{location: 234}});
     errors.should.be.an.instanceOf(Array).with.lengthOf(1);
-    done();
   });
 
-  it('returns errors for a missing required field', function(done){
+  it('returns errors for a missing required field', function(){
     var schema = new Schema({
       name: {type: String, required: true},
       age: Number
     });
     var errors = schema.validate({age: 44});
     errors.should.be.an.instanceOf(Array).with.lengthOf(1);
-    done();
   });
 
-  it('returns an Elasticsearch properties mapping', function(done){
+  it('returns an Elasticsearch properties mapping', function(){
     var schema = new Schema({
       name: String,
       company: {
@@ -89,7 +82,6 @@ describe('Schema', function(){
     mapping.should.have.property('properties')
       .and.have.property('name')
       .and.have.property('type', 'string');
-    done();
   });
 
 });

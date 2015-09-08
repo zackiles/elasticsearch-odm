@@ -15,9 +15,16 @@ describe('Model', function(){
   });
 
   describe('Instance Methods', function(){
+    it('properties shared between instances', function(){
+      var Model1 = app.model('Mg3q5gherheh');
+      var Model2 = app.model('Mg3q5gherheh');
+      delete Model1.db;
+      should.not.exist(Model2.db);
+    });
 
     describe('.save()', function(){
       it('saves a new document', function(done){
+        this.timeout(3000);
         car.save().then(function(doc){
           doc = doc.toObject();
           doc.should.have.property('id');

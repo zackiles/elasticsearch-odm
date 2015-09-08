@@ -67,7 +67,6 @@ var Car = elasticsearch.model('Car', carSchema);
   - [`.set(Object data)`](#setobject-data---document)
   - [`.toJSON()`](#tojson)
   - [`.toObject()`](#toobject)
-  - [`.toMapping()`](#tomapping)
 - [Model](#model)
   - [`.count()`](#count---object)
   - [`.create(Object data)`](#createobject-data---document)
@@ -83,6 +82,7 @@ var Car = elasticsearch.model('Car', carSchema);
   - [`.findAndRemove(Object/String match)`](#findandremoveobjectstring-match---object)
   - [`.findOneAndRemove(Object/String match)`](#findoneandremoveobjectstring-match---object)
   - [`.makeInstance(Object data)`](#makeinstanceobject-data---document)
+  - [`.toMapping()`](#tomapping)
 - [Query Options](#query-options)
   - [`q`](#q)
   - [`page & per_page`](#page--per_page)
@@ -162,9 +162,6 @@ Like Mongoose, strips all non-document properties from the instance and returns 
 ##### `.toObject()`
 Like Mongoose, strips all non-document properties from the instance and returns an object.
 
-##### `.toMapping()`
-Returns a complete Elasticsearch mapping for this model based off it's schema. If no schema was used, it returns nothing. Used internally, but it's there if you'd like it.
-
 ### Model
 Model definitions returned from .model() in core include several static functions to help query and manage documents. Most functions are similar to Mongoose, but due to the differences in Elasticsearch, querying includes some extra advanced features.
 
@@ -208,6 +205,11 @@ Car.find({color: 'blue'}).then(function(results){
   console.log(results);
 });
 
+// Chained query (instead of Mongoose .exec(), we call .then()
+Car.find({color: 'blue'})
+.sort('createdOn')
+.then(...
+
 // Simple nested query (for nested documents/properties).
 Car.find({'location.city': 'New York'})
 
@@ -247,6 +249,9 @@ Same as .findAndRemove(), but removes the first found document.
 
 ##### `.makeInstance(Object data)` -> `Document`
 Helper function. Takes a raw object and creates a document instance out of it. The object would need at least an id property. The document returned can be used normally as if it were returned from other calls like .find().
+
+##### `.toMapping()`
+Returns a complete Elasticsearch mapping for this model based off it's schema. If no schema was used, it returns nothing. Used internally, but it's there if you'd like it.
 
 ### Query Options
 The query options object includes several options that are normally included in mongoose chained queries, like sort, and paging (skip/limit), and also some advanced features from Elasticsearch.

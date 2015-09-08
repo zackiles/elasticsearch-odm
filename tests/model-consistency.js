@@ -9,7 +9,7 @@ var getUnique = function(){
   return _.uniqueId(Date.now().toString());
 };
 
-describe('Data Consistency', function(){
+describe('Model Consistency', function(){
 
   before(function(done){
     this.timeout(10000);

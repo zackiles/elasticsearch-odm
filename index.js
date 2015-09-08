@@ -17,7 +17,7 @@ var logger = require('./lib/logger'),
 logger.transports.console.silent = (process.env.NODE_ENV !== 'development');
 
 var db = {
-  host: '',
+  host: 'localhost:9200',
   index: '',
   logging: process.env.NODE_ENV === 'development',
   client: {},
@@ -109,7 +109,8 @@ function model(modelName, schema){
   modelInstance.model = {
     type: pluralize(modelName).toLowerCase(),
     name: modelName,
-    constructor: modelInstance
+    constructor: modelInstance,
+    isMappingSynced: false
   };
 
   if(schema) {

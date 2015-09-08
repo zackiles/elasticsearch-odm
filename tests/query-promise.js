@@ -2,6 +2,7 @@
 
 var app = require('../index'),
     _ = require('lodash'),
+    Promise = require('bluebird'),
     should = require('should');
 
 var Car = app.model('Car');
@@ -10,7 +11,8 @@ var car;
 describe('Query Promise', function(){
   before(function(done){
     this.timeout(10000);
-    app.connect('esodm-test').then(function(){
+    app.connect('esodm-test')
+    .then(function(){
       car = new Car({name:'Ford'});
       return car.save();
     })
@@ -27,14 +29,23 @@ describe('Query Promise', function(){
       res.should.be.instanceof(Array);
       res[0].should.have.property('name', car.name);
       done();
-    });
+    })
+    .catch(done);
+  });
+
+  it('can call .all() on array of query promises', function(done){
+    Promise.all([Car.findById(car.id), Car.findById(car.id)])
+    .spread(function(promise1, promise2){
+      promise1.should.be.instanceof(Object).and.have.property('id', car.id);
+      promise2.should.be.instanceof(Object).and.have.property('id', car.id);
+      done();
+    }).catch(done);
   });
 
   after(function(done){
     this.timeout(10000);
     Car.findAndRemove({name: car.name})
-    .then(function(results){
-
+    .then(function(){
       done();
     })
     .catch(done);
