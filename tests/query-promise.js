@@ -23,8 +23,10 @@ describe('Query Promise', function(){
   });
 
   it('wraps a .find() query', function(done){
-    Car.find({name: car.name})
+    Car.find()
     .sort('createdOn')
+    .missing('owner')
+    .must({name: car.name})
     .then(function(res){
       res.should.be.instanceof(Array);
       res[0].should.have.property('name', car.name);

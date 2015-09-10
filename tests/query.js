@@ -73,6 +73,11 @@ describe('Query', function(){
       req.body.query.should.have.property('filtered');
     });
 
+    it('creates a Missing Filter query', function(){
+      var req = Query.parseRequest(index, type, null, {missing: ['published']} );
+      req.body.query.should.have.property('filtered');
+    });
+
     it('creates a Must Filter query with shorthand syntax', function(){
       var req = Query.parseRequest(index, type, {name: 'Ford', color: 'Blue'});
       req.body.query.should.have.property('filtered');

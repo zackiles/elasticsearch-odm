@@ -90,6 +90,7 @@ var Car = elasticsearch.model('Car', carSchema);
   - [`sort`](#sort)
   - [`must`](#must)
   - [`not`](#mot)
+  - [`missing`](#missing)
   - [`random`](#random)
 - [Schemas](#schemas)
 
@@ -329,6 +330,18 @@ Example:
 // OR
 {
   not: {name: ['Jim', 'Bob']} // All documents that aren't named Jim or Bob.
+}
+```
+##### Missing
+Type: `Array or String`
+A single field name, or array of field names. Matches documents where these field names are missing. A field is considered mising, when it is null, empty, or does not exist. See [MissingFilter]
+(https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-missing-filter.html).
+
+Example:
+
+```js
+{
+  missing: ['description', 'name']
 }
 ```
 
