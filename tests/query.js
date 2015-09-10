@@ -10,7 +10,7 @@ describe('Query', function(){
 
 
   describe('.parseQuery()', function(){
-    it('creates a MatchAll query when no queryOptions provided', function(){
+    it('MatchAll query when no queryOptions provided', function(){
       var req = Query.parseRequest(index, type);
       req.should.have.property('index', index);
       req.should.have.property('type', type);
@@ -18,7 +18,7 @@ describe('Query', function(){
         .and.have.property('query', { match_all: {} });
     });
 
-    it('creates a default Must query', function(){
+    it('default Must query', function(){
       var req = Query.parseRequest(index, type, {name: 'Jim'});
       req.body.query.should.have.property('filtered');
     });
@@ -45,40 +45,87 @@ describe('Query', function(){
         .and.have.property('query', { query_string: { query: 'Jim' } });
     });
 
-    it('creates a Random query', function(){
+    it('Random query', function(){
       var req = Query.parseRequest(index, type, null, {random: true});
       req.body.query.should.have.property('function_score')
         .and.have.property('random_score')
         .and.have.property('seed');
     });
 
-    it('creates a Sort query', function(){
+    it('Sort query', function(){
       var req = Query.parseRequest(index, type, null, {sort: 'createdOn'});
       req.body.should.have.property('sort');
     });
 
-    it('creates a Fields query', function(){
+    it('Fields query', function(){
       var req = Query.parseRequest(index, type, null, {fields: ['name']});
       req.body.should.have.property('fields');
     });
 
-    it('creates a Paginate query', function(){
+    it('Paginate query', function(){
       var req = Query.parseRequest(index, type, null, {page: 1, per_page: 10});
       req.should.have.property('from', 0);
       req.should.have.property('size', 10);
     });
 
-    it('creates a Must Filter query', function(){
-      var req = Query.parseRequest(index, type, null, {must: {name: 'Ford', color: 'Blue'}} );
-      req.body.query.should.have.property('filtered');
+    it('Must Filter query', function(){
+      var req = Query.parseRequest(index, type, null, {must: {name: 'Ford'}} );
+      req.body.query.should.have.property('filtered')
+        .and.have.property('filter')
+        .and.have.property('bool')
+        .and.have.property('must')
+        .and.have.property('term')
+        .and.have.property('name', 'Ford');
     });
 
-    it('creates a Missing Filter query', function(){
-      var req = Query.parseRequest(index, type, null, {missing: ['published']} );
-      req.body.query.should.have.property('filtered');
+    it('Must Filter query array', function(){
+      var req = Query.parseRequest(index, type, null, {must: {name: 'Ford', color: 'Red'}} );
+      req.body.query.should.have.property('filtered')
+        .and.have.property('filter')
+        .and.have.property('bool')
+        .and.have.property('must')
+        .and.be.instanceof(Array);
     });
 
-    it('creates a Must Filter query with shorthand syntax', function(){
+    it('Missing Filter query', function(){
+      var req = Query.parseRequest(index, type, null, {missing: 'name'} );
+      req.body.query.should.have.property('filtered')
+        .and.have.property('filter')
+        .and.have.property('bool')
+        .and.have.property('must')
+        .and.have.property('missing')
+        .and.have.property('field', 'name');
+    });
+
+    it('Missing Filter query array', function(){
+      var req = Query.parseRequest(index, type, null, {missing: ['name', 'color']} );
+      req.body.query.should.have.property('filtered')
+        .and.have.property('filter')
+        .and.have.property('bool')
+        .and.have.property('must')
+        .and.be.instanceof(Array);
+    });
+
+    it('Exists Filter query', function(){
+      var req = Query.parseRequest(index, type, null, {exists: 'name'} );
+      req.body.query.should.have.property('filtered')
+        .and.have.property('filter')
+        .and.have.property('bool')
+        .and.have.property('must')
+        .and.have.property('exists')
+        .and.have.property('field', 'name');
+    });
+
+    it('Exists Filter query array', function(){
+      var req = Query.parseRequest(index, type, null, {exists: ['name', 'color']} );
+      req.body.query.should.have.property('filtered')
+        .and.have.property('filter')
+        .and.have.property('bool')
+        .and.have.property('must')
+        .and.be.instanceof(Array);
+    });
+
+    it('Must Filter query with shorthand syntax', function(){
       var req = Query.parseRequest(index, type, {name: 'Ford', color: 'Blue'});
       req.body.query.should.have.property('filtered');
     });

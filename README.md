@@ -91,6 +91,7 @@ var Car = elasticsearch.model('Car', carSchema);
   - [`must`](#must)
   - [`not`](#mot)
   - [`missing`](#missing)
+  - [`exists`](#exists)
   - [`random`](#random)
 - [Schemas](#schemas)
 
@@ -206,29 +207,23 @@ Car.find({color: 'blue'}).then(function(results){
   console.log(results);
 });
 
-// Chained query (instead of Mongoose .exec(), we call .then()
-Car.find({color: 'blue'})
-.sort('createdOn')
-.then(...
-
-// Simple nested query (for nested documents/properties).
+// Nested query (for nested documents/properties).
 Car.find({'location.city': 'New York'})
-
-// Advanced query.
-Car.find({color: 'blue'}, {sort: ['name', 'createdOn'})
 
 // Find all by passing null or empty object to first argument
 Car.find(null, {sort: 'createdOn'})
 
-// Advanced query using only filters.
-// Returns all cars that arent red, and sorts by name, then createdOn.
-var queryOptions = {
-  not: {
-    color: 'red'
-  }
-  sort: ['name', 'createdOn'}
-};
-Car.find(null, queryOptions)
+// Search all fields using a QueryStringQuery.
+Car.find('some text')
+
+// Chained query without using [Query Options](#query-options).
+// Instead of Mongoose .exec(), we call .then()
+Car.find()
+.must({color: 'blue'})
+.exists('owner')
+.sort('createdOn')
+.then(...)
+
 ```
 ##### `.search(Object queryOptions)` -> `Document`
 Helper function. Just calls .find() without the first paramter. The first paramater is technically only a 'must' filter, so if you still need that ability set the 'must' paramter like you would the first argument of .find(). All see [Query Options](#query-options).
@@ -332,7 +327,7 @@ Example:
   not: {name: ['Jim', 'Bob']} // All documents that aren't named Jim or Bob.
 }
 ```
-##### Missing
+##### missing
 Type: `Array or String`
 A single field name, or array of field names. Matches documents where these field names are missing. A field is considered mising, when it is null, empty, or does not exist. See [MissingFilter]
 (https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-missing-filter.html).
@@ -342,6 +337,17 @@ Example:
 ```js
 {
   missing: ['description', 'name']
+}
+```
+##### exists
+Type: `Array or String`
+A single field name, or array of field names. Matches documents where these field names exists. The opposite of [missing](#missing).
+
+Example:
+
+```js
+{
+  exists: ['description', 'name']
 }
 ```
 
