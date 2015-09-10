@@ -75,7 +75,6 @@ var Car = elasticsearch.model('Car', carSchema);
   - [`.removeByIds(Array ids)`](#removebyidsarray-id)
   - [`.set(String id)`](#setstring-id-object-data---document)
   - [`.find(Object/String match, Object queryOptions)`](#findobjectstring-match-object-queryoptions---document)
-  - [`.search(Object queryOptions)`](#searchobject-queryoptions---document)
   - [`.findById(String id, Array/String fields)`](#findbyidstring-id-arraystring-fields---document)
   - [`.findByIds(Array ids, Array/String fields)`](#findbyidsarray-ids-arraystring-fields---document)
   - [`.findOne(Object/String match, Array/String fields)`](#findoneobjectstring-match-arraystring-fields---document)
@@ -216,7 +215,7 @@ Car.find(null, {sort: 'createdOn'})
 // Search all fields using a QueryStringQuery.
 Car.find('some text')
 
-// Chained query without using [Query Options](#query-options).
+// Chained query without using Query Options.
 // Instead of Mongoose .exec(), we call .then()
 Car.find()
 .must({color: 'blue'})
@@ -225,9 +224,6 @@ Car.find()
 .then(...)
 
 ```
-##### `.search(Object queryOptions)` -> `Document`
-Helper function. Just calls .find() without the first paramter. The first paramater is technically only a 'must' filter, so if you still need that ability set the 'must' paramter like you would the first argument of .find(). All see [Query Options](#query-options).
-
 ##### `.findById(String id, Array/String fields)` -> `Document`
 Finds a document by id. 'fields' argument is optional and specifies the fields of the document you'd like to include.
 
