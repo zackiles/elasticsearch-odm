@@ -13,7 +13,7 @@ describe('Query Promise', function(){
     this.timeout(10000);
     app.connect('esodm-test')
     .then(function(){
-      car = new Car({name:'Ford'});
+      car = new Car({name:'Ford', slug: 'someslug'});
       return car.save();
     })
     .then(function(){
@@ -25,11 +25,13 @@ describe('Query Promise', function(){
   it('wraps a .find() query', function(done){
     Car.find()
     .sort('createdOn')
-    .missing('owner')
-    .must({name: car.name})
+    .missing('asfasfasf')
+    .exists('name')
+    .must({name: car.name, slug: car.slug})
     .then(function(res){
       res.should.be.instanceof(Array);
       res[0].should.have.property('name', car.name);
+      res[0].should.have.property('slug', car.slug);
       done();
     })
     .catch(done);

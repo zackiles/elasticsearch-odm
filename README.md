@@ -91,7 +91,6 @@ var Car = elasticsearch.model('Car', carSchema);
   - [`not`](#mot)
   - [`missing`](#missing)
   - [`exists`](#exists)
-  - [`random`](#random)
 - [Schemas](#schemas)
 
 ### Core
@@ -187,14 +186,18 @@ Completely overwrites the document matching the id with the data passed, and ret
 *Will remove any fields in the document that aren't passed.*
 
 ##### `.find(Object/String match, Object queryOptions)` -> `Document`
-Unlike mongoose, searching for exact matches requires the fields in your mapping to be set to 'not_analyzed'.
-*Depending on the [analyzer](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-analyzers.html) in your [mapping](https://www.elastic.co/guide/en/elasticsearch/guide/current/mapping-intro.html),  this method may produce varying results.*
+There are four ways to call .find() and it's siblings. You can mix and match styles.
+- Passing only a match object like `.find({name:'Joe'})`
+- Passing only a string to match against all document fields `.find('some string')`
+- Passing [Query Options](#query-options) (match can be set to null/empty) `.find({}, {must: {active: true, sort: 'createdOn'}}}
+- Use chaining options (alias for QueryOptions) `.find({}).must({active: true}).sort('createdOn').then(..)`
 
-Like Mongoose the first paramter can be an object with properties and values to match a document with. Also, instead of an object, just a string can be passed which will match against all documents using the power of an Elasticsearch [QueryStringQuery](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html).
+Unlike mongoose, finding exact matches requires the fields in your mapping to be set to 'not_analyzed'. By default `{index: not_analyzed}` is added to all string fields in your Schema unless you override it.
+*Depending on the [analyzer](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-analyzers.html) in your [mapping](https://www.elastic.co/guide/en/elasticsearch/guide/current/mapping-intro.html), find queries like must, not, and matches may not find any results.*
 
-*the match object can also be set to null for find all*
+match => Optional. An alias for the 'must' Query Option.  Like Mongoose this matches name/value in documents. Also, instead of an object, just a string can be passed which will match against all document fields using the power of an Elasticsearch [QueryStringQuery](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html).
 
-The second optional argument is an object with Query Options. Here you can specifiy paging, filtering, sorting and other advanced elasticsearch queries. [See here for more details](#query-options). You can set the first argument to null, and only use filters from the query options if you wanted.
+queryOptions => Optional (can also use chaining instead). An object with Query Options. Here you can specifiy paging, filtering, sorting and other advanced options. [See here for more details](#query-options). You can set the first argument to null, and only use filters from the query options if you wanted.
 
 Example:
 
@@ -256,6 +259,13 @@ A string to search all document fields with using Elasticsearch [QueryStringQuer
 
 *Depending on your Elasticsearch version, you might not be able to combine this with not/must filters*
 
+Example:
+
+```js
+{
+  q: 'a string to match against all fields'
+}
+```
 ##### page & per_page
 Type: `Integer`
 
@@ -277,6 +287,11 @@ For most use cases, paging is better suited than skip/limit, so this library inc
 Type: `Array or String`
 
 A list of fields to include for the documents returned. For example, you could pass 'id' to only return the matching document id's.
+
+```js
+{
+  fields: ['name', 'description']
+}
 
 ##### sort
 Type: `Array or String`
@@ -347,13 +362,6 @@ Example:
 }
 ```
 
-##### random
-Type: `Boolean`
-
-A helper function. It will add randomly seeded [function_score](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-function-score-query.html) to the query which will force Elasticsearch to randomly score/sort the documents. This can be expensive, so use sparingly.
-
-*Can't be combined with sort.*
-
 ### Schemas
 Models don't require schemas, but it's best to use them - especially if you'll be making search queries. Elasticsearch-odm will generate and update Elasticsearch with the proper mappings based off your schema definition.
 The schemas are similar to Mongoose, but several new field types have been added which Elasticsearch supports. These are; **float**, **double**, **long**, **short**, **byte**, **binary**, **geo_point**. Generally for numbers, only the Number type is needed (which converts to Elasticsearch integer). You can read more about Elasticsearch types [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-core-types.htm).
@@ -371,43 +379,44 @@ Example:
 
 // Note the various ways you can define a schema field type.
 var carSchema = new elasticsearch.Schema({
-  type: String,
+  // native type without options
   available: Boolean,
-  color: {type: String, required: true},
-
-  // Enable full-text search of this field.
-  // NOTE: it's better to than use the 'q' paramater in queryOptions
-  // during searches instead of must/not or match when using 'analyzed'
-  description: {type:String, index: 'analyzed'}
-
-  // Ignore_malformed is an Elasticsearch Core Type field option for numbers
-  price: {type: 'double', ignore_malformed: true},
-
-  oldPrices: {type: ['double']},
+  // Elasticsearch type without options
   safteyRating: 'float',
-  year: Number,
+  // native array type
   parts: [String],
-
-  // A nested object
+  // Elasticsearch array type
+  oldPrices: {type: ['double']},
+  // with options
+  color: {type: String, required: true},
+  // a field named 'type' must be defined like the following.
+  type: {type: String},
+  // nested document
   owner: {
     name: String,
     age: Number,
     // force a required field
     location: {type: 'geo_point', required: true}
   },
-
-  // A nested object array
+  // nested document array
   inspections: [{
     date: Date,
     grade: Number
   }],
+  // Enable full-text search of this field.
+  // NOTE: it's better to than use the 'q' paramater in queryOptions
+  // during searches instead of must/not or match when using 'analyzed'
+  description: {type:String, index: 'analyzed'}
+
+  // Ignore_malformed is an Elasticsearch Core Type field option for numbers
+  price: {type: 'double', ignore_malformed: true}
 });
 ```
 #### CONTRIBUTING
 This is a library Elasticsearch desperately needed for Node.js. Currently the official npm [elasticsearch](https://www.npmjs.com/package/elasticsearch) client has about 23,000 downloads per week, many of them would benefit from this library instead. Pull requests are welcome. There are [Mocha](https://github.com/mochajs/mocha) and [benchmark](https://www.npmjs.com/package/benchmark) tests in the root directory.
 
 #### TODO
-- Flatten find query matches to dot notaion form for inner objects.
+- Add support for [querying nested document arrays](https://www.elastic.co/guide/en/elasticsearch/guide/current/nested-query.html) with dot notation syntax.
 - Add [scrolling](https://www.elastic.co/guide/en/elasticsearch/reference/1.6/search-request-scroll.html)
 - Add a wrapper to enable streaming of document results.
 - Add [snapshots/backups](https://www.elastic.co/guide/en/elasticsearch/reference/1.6/modules-snapshots.html)
