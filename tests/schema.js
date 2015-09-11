@@ -15,6 +15,14 @@ describe('Schema', function(){
     });
   });
 
+  it('ignores properties named type that are not type definitons', function(){
+    var schema = new Schema(schemaMocks.typeAsType);
+    schema.should.have.property('fields').and.have.property('type').and.have.property('type');
+    schema.fields.type.should.have.property('options').and.have.property('required');
+    schema.fields.should.have.property('nestedType').and.have.property('type');
+    schema.fields.nestedType.type.should.have.property('options').and.have.property('required');
+  });
+
   it('detects single level nested type definitions', function(){
     var schema = new Schema(schemaMocks.nestedSingleLevel);
     _.forOwn(schema.fields.nestedDocumentArray, function(v, k){
@@ -34,11 +42,33 @@ describe('Schema', function(){
     should.not.exist(errors);
   });
 
+  it('validates a good document with properties named type that are not type definitons', function(){
+    var schema = new Schema(schemaMocks.typeAsType);
+    var errors = schema.validate({
+      type: 'Something',
+      nestedType: {
+        type: 'Something'
+      }
+    });
+    should.not.exist(errors);
+  });
+
   it('returns errors for a bad document', function(){
     var schema = new Schema({
       name: String
     });
     var errors = schema.validate({name: 44});
+    should.exist(errors);
+  });
+
+  it('returns errors for a bad document with properties named type that are not type definitons', function(){
+    var schema = new Schema(schemaMocks.typeAsType);
+    var errors = schema.validate({
+      type: 235235235,
+      nestedType: {
+        type: 325235235
+      }
+    });
     should.exist(errors);
   });
 

@@ -2,7 +2,8 @@
 
 module.exports = {
   nestedSingleLevel: nestedSingleLevel(),
-  types: types()
+  types: types(),
+  typeAsType: typeAsType()
 };
 
 function nestedSingleLevel(){
@@ -15,6 +16,15 @@ function nestedSingleLevel(){
   schema.nestedDocumentArray = [types()];
   schema.nestedDocumentObject = types();
   return schema;
+}
+
+function typeAsType(){
+  return {
+    type: {type: String, required: true},
+    nestedType: {
+      type: {type: String, required: true}
+    }
+  };
 }
 
 function types(){
