@@ -83,10 +83,10 @@ var Car = elasticsearch.model('Car', carSchema);
   - [`.makeInstance(Object data)`](#makeinstanceobject-data---document)
   - [`.toMapping()`](#tomapping)
 - [Query Options](#query-options)
-  - [`q`](#q)
   - [`page & per_page`](#page--per_page)
   - [`fields`](#fields)
   - [`sort`](#sort)
+  - [`q`](#q)
   - [`must`](#must)
   - [`not`](#mot)
   - [`missing`](#missing)
@@ -252,20 +252,6 @@ Returns a complete Elasticsearch mapping for this model based off it's schema. I
 The query options object includes several options that are normally included in mongoose chained queries, like sort, and paging (skip/limit), and also some advanced features from Elasticsearch.
 The Elasticsearch [Query](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html) and [Filter](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-filters.html) DSL is generated using best practices.
 
-##### q
-Type: `String`
-
-A string to search all document fields with using Elasticsearch [QueryStringQuery](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html). This can be expensive, so use it sparingly.
-
-*Depending on your Elasticsearch version, you might not be able to combine this with not/must filters*
-
-Example:
-
-```js
-{
-  q: 'a string to match against all fields'
-}
-```
 ##### page & per_page
 Type: `Integer`
 
@@ -286,57 +272,107 @@ For most use cases, paging is better suited than skip/limit, so this library inc
 ##### fields
 Type: `Array or String`
 
-A list of fields to include for the documents returned. For example, you could pass 'id' to only return the matching document id's.
+A list of fields to include in the documents returned. For example, you could pass 'id' to only return the matching document id's. See [Elasticsearch Fields](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-fields.html).
 
 ```js
+// Query Options.
 {
-  fields: ['name', 'description']
+  fields: ['name', 'age']
 }
+
+// Chained Query.
+.find()
+.fields(['name', 'age'])
+.then(...)
+```
 
 ##### sort
 Type: `Array or String`
 
-A list of fields to sort on. If multiple fields are passed then they are executed in order. Adding a '-' sign to the start of the field name makes it sort descending. Default is ascending.
+A list of fields to sort on. If multiple fields are passed then they are executed in order. Adding a '-' sign to the start of the field name makes it sort descending. Default is ascending. See [Elasticsearch Sort](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-sort.html).
 
 Example:
 
 ```js
+// Query Options.
 {
-  sort: ['name', '-createdOn'] // created on is sorted descending.
+  sort: ['name', 'createdOn']
 }
+
+// Chained Query.
+.find()
+.sort(['name', 'createdOn'])
+.then(...)
 ```
+
+##### q
+Type: `String`
+
+A string to search all document fields with using Elasticsearch [QueryStringQuery](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html). This can be expensive, so use it sparingly.
+
+*Depending on your Elasticsearch version, you might not be able to combine this with not/must filters*
+
+Example:
+
+```js
+// Query Options.
+{
+  q: 'Red dog run'
+}
+
+// Chained Query.
+.find('Red dog run')
+.then(...)
+```
+
 ##### must
 Type: `Object`
 
-An object with key/values that the documents MUST match against. Essentially identical to what is passed to Mongooses .find() and the first argument of .find() in this library.
-Elasticsearches internal [Tokenizers](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-tokenizers.html) are not used, and fields are not analyzed. This is essentially a 'must' [Bool Filter](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-bool-filter.html).
+Key value pairs to match documents against. Essentially it's the same as first argument passed to Mongoose .find(). This is also an alias to the first argument passed to .find() in this library.
+This is a 'must' [Bool Filter](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-bool-filter.html).
 
-*Can be combined with notfilters*
+***Elasticsearches internal [Tokenizers](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-tokenizers.html) are used, and fields are analyzed.***
+*Can specify nested fields using dot notation.*
 
 Example:
 
 ```js
+// Query Options.
 {
-  must: {name: 'Jim'} // All documents matching the name Jim.
+  must: {
+    name: 'Jim',
+    'location.country': 'Canada'
+  }
 }
+
+// Chained Query.
+.find()
+.must({name: 'Jim', 'location.country': 'Canada'})
+.then(...)
 ```
 ##### not
 Type: `Object`
 
-An object with key/values that the documents must NOT match against. This is essentially a 'must_not' [Bool Filter](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-bool-filter.html).
+The same as [must](#must), but matches documents where the key value pairs DON'T match.
+This is a 'must_not' [Bool Filter](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-bool-filter.html) query.
 
-*Can be combined with must filters*
+*Can specify nested fields using dot notation.*
 
 Example:
 
 ```js
+// Query Options.
 {
-  not: {name: 'Jim'} // All documents that aren't named Jim.
+  not: {
+    name: 'Jim',
+    'location.country': 'Canada'
+  }
 }
-// OR
-{
-  not: {name: ['Jim', 'Bob']} // All documents that aren't named Jim or Bob.
-}
+
+// Chained Query.
+.find()
+.not({name: 'Jim', 'location.country': 'Canada'})
+.then(...)
 ```
 ##### missing
 Type: `Array or String`
@@ -346,9 +382,15 @@ A single field name, or array of field names. Matches documents where these fiel
 Example:
 
 ```js
+// Query Options.
 {
   missing: ['description', 'name']
 }
+
+// Chained Query.
+.find()
+.missing(['description', 'name'])
+.then(...)
 ```
 ##### exists
 Type: `Array or String`
@@ -357,9 +399,15 @@ A single field name, or array of field names. Matches documents where these fiel
 Example:
 
 ```js
+// Query Options.
 {
   exists: ['description', 'name']
 }
+
+// Chained Query.
+.find()
+.exists(['description', 'name'])
+.then(...)
 ```
 
 ### Schemas

@@ -8,7 +8,7 @@ var app = require('../index'),
 var Car = app.model('Car');
 var car;
 
-describe('Query Promise', function(){
+describe('Query-Promise', function(){
   before(function(done){
     this.timeout(10000);
     app.connect('esodm-test')
