@@ -75,11 +75,11 @@ var Car = elasticsearch.model('Car', carSchema);
   - [`.removeByIds(Array ids)`](#removebyidsarray-id)
   - [`.set(String id)`](#setstring-id-object-data---document)
   - [`.find(Object/String match, Object queryOptions)`](#findobjectstring-match-object-queryoptions---document)
-  - [`.findById(String id, Array/String fields)`](#findbyidstring-id-arraystring-fields---document)
-  - [`.findByIds(Array ids, Array/String fields)`](#findbyidsarray-ids-arraystring-fields---document)
-  - [`.findOne(Object/String match, Array/String fields)`](#findoneobjectstring-match-arraystring-fields---document)
-  - [`.findAndRemove(Object/String match)`](#findandremoveobjectstring-match---object)
-  - [`.findOneAndRemove(Object/String match)`](#findoneandremoveobjectstring-match---object)
+  - [`.findById(String id, Object queryOptions)`](#findbyidstring-id-object-queryoptions---document)
+  - [`.findByIds(Array ids, Object queryOptions)`](#findbyidsarray-ids-object-queryoptions---document)
+  - [`.findOne(Object/String match, Object queryOptions)`](#findoneobjectstring-match-object-queryoptions---document)
+  - [`.findAndRemove(Object/String match, Object queryOptions)`](#findandremoveobjectstring-match-object-queryoptions---object)
+  - [`.findOneAndRemove(Object/String match, Object queryOptions)`](#findoneandremoveobjectstring-match-object-queryoptions---object)
   - [`.makeInstance(Object data)`](#makeinstanceobject-data---document)
   - [`.toMapping()`](#tomapping)
 - [Query Options](#query-options)
@@ -189,7 +189,7 @@ Completely overwrites the document matching the id with the data passed, and ret
 There are four ways to call .find() and it's siblings. You can mix and match styles.
 - Passing only a match object like `.find({name:'Joe'})`
 - Passing only a string to match against all document fields `.find('some string')`
-- Passing [Query Options](#query-options) (match can be set to null/empty) `.find({}, {must: {active: true, sort: 'createdOn'}}}
+- Passing [Query Options](#query-options) (match can be set to null/empty) `.find({}, {must: {active: true, sort: 'createdOn'}}}`
 - Use chaining options (alias for QueryOptions) `.find({}).must({active: true}).sort('createdOn').then(..)`
 
 Unlike mongoose, finding exact matches requires the fields in your mapping to be set to 'not_analyzed'. By default `{index: not_analyzed}` is added to all string fields in your Schema unless you override it.
@@ -198,6 +198,8 @@ Unlike mongoose, finding exact matches requires the fields in your mapping to be
 match => Optional. An alias for the 'must' Query Option.  Like Mongoose this matches name/value in documents. Also, instead of an object, just a string can be passed which will match against all document fields using the power of an Elasticsearch [QueryStringQuery](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html).
 
 queryOptions => Optional (can also use chaining instead). An object with Query Options. Here you can specifiy paging, filtering, sorting and other advanced options. [See here for more details](#query-options). You can set the first argument to null, and only use filters from the query options if you wanted.
+
+returns => Found documents, or null if nothing was found.
 
 Example:
 
@@ -227,20 +229,20 @@ Car.find()
 .then(...)
 
 ```
-##### `.findById(String id, Array/String fields)` -> `Document`
+##### `.findById(String id, Object queryOptions)` -> `Document`
 Finds a document by id. 'fields' argument is optional and specifies the fields of the document you'd like to include.
 
-##### `.findByIds(Array ids, Array/String fields)` -> `Document`
+##### `.findByIds(Array ids, Object queryOptions)` -> `Document`
 Helper function. Same as .findById() but for multiple documents.
 
-##### `.findOne(Object/String match, Array/String fields)` -> `Document`
-First argument is the same as .find(). Second argument is a list of fields to include instead of query options and it only returns the first document matching. This is similar to using the 'must' query option.
+##### `.findOne(Object/String match, Object queryOptions)` -> `Document`
+Same arguments as .find(). Returns the first matching document.
 
-##### `.findAndRemove(Object/String match)` -> 'Object'
-First argument is the same as .find(). Removes all matching documents and returns their raw objects.
+##### `.findAndRemove(Object/String match, Object queryOptions)` -> 'Object'
+Same arguments as .find(). Removes all matching documents and returns their raw objects.
 
-##### `.findOneAndRemove(Object/String match)` -> 'Object'
-Same as .findAndRemove(), but removes the first found document.
+##### `.findOneAndRemove(Object/String match, Object queryOptions)` -> 'Object'
+Same arguments as .findAndRemove(). Removes the first found document.
 
 ##### `.makeInstance(Object data)` -> `Document`
 Helper function. Takes a raw object and creates a document instance out of it. The object would need at least an id property. The document returned can be used normally as if it were returned from other calls like .find().
@@ -332,7 +334,8 @@ Key value pairs to match documents against. Essentially it's the same as first a
 This is a 'must' [Bool Filter](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-bool-filter.html).
 
 ***Elasticsearches internal [Tokenizers](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-tokenizers.html) are used, and fields are analyzed.***
-*Can specify nested fields using dot notation.*
+
+*You Can specify nested fields using dot notation.*
 
 Example:
 
@@ -376,6 +379,7 @@ Example:
 ```
 ##### missing
 Type: `Array or String`
+
 A single field name, or array of field names. Matches documents where these field names are missing. A field is considered mising, when it is null, empty, or does not exist. See [MissingFilter]
 (https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-missing-filter.html).
 
@@ -394,6 +398,7 @@ Example:
 ```
 ##### exists
 Type: `Array or String`
+
 A single field name, or array of field names. Matches documents where these field names exists. The opposite of [missing](#missing).
 
 Example:
