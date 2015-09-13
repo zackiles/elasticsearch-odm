@@ -37,7 +37,7 @@ function connect(options){
     return Promise.reject(new MissingArgumentError('options'));
   }
 
-  db.client = Client.makeClient(db);
+  module.exports.client = db.client = Client.makeClient(db);
 
   return db.client.indices.exists({index: db.index}).then(function(result){
     if(result){
