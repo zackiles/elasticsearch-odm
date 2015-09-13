@@ -92,6 +92,7 @@ var Car = elasticsearch.model('Car', carSchema);
   - [`missing`](#missing)
   - [`exists`](#exists)
 - [Schemas](#schemas)
+  - [`Hooks and Middleware`](#hooks-and-middleware)
 
 ### Core
 Core methods can be called directly on the Elasticsearch ODM instance. These include methods to configure, connect, and get information from your Elasticsearch database. Most methods act upon the [official Elasticsearch client](https://www.npmjs.com/package/elasticsearch).
@@ -465,6 +466,26 @@ var carSchema = new elasticsearch.Schema({
   price: {type: 'double', ignore_malformed: true}
 });
 ```
+##### Hooks and Middleware
+Schemas include pre and post hooks that function similar to Mongoose. Currently, there are pre/post hooks for 'save' and 'remove'. In pre hooks 'this' is always the current document instance, where in post hooks the first argument is the document instance. Hooks must call done() when finished. Passing an Error to done() will cancel the current operation. For example, in a 'save' pre hook, passing an error to done() will cause the document not to be saved and will return your error to the save() callers rejection handler.
+
+Example:
+```js
+var schema = new elasticsearch.Schema(...);
+schema.pre('save', function(done){
+  console.log(this); // this = the current document
+  done();
+});
+schema.post('save', function(document, done){
+  console.log(document); // document = the current document
+  done();
+});
+
+// Also remove hooks.
+schema.pre('remove', function(done)...
+schema.post('remove', function(document, done)...
+```
+
 #### CONTRIBUTING
 This is a library Elasticsearch desperately needed for Node.js. Currently the official npm [elasticsearch](https://www.npmjs.com/package/elasticsearch) client has about 23,000 downloads per week, many of them would benefit from this library instead. Pull requests are welcome. There are [Mocha](https://github.com/mochajs/mocha) and [benchmark](https://www.npmjs.com/package/benchmark) tests in the root directory.
 

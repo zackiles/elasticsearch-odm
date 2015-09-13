@@ -1,6 +1,6 @@
 {
   "name": "elasticsearch-odm",
-  "version": "0.0.17",
+  "version": "0.1.0",
   "description": "Like Mongoose but for Elasticsearch. Define models, preform CRUD operations, and build advanced search queries.",
   "main": "index.js",
   "scripts": {
@@ -36,6 +36,7 @@
     "bluebird": "~2.9.34",
     "dot-object": "^1.1.0",
     "elasticsearch": "~8.0.1",
+    "kareem": "^1.0.1",
     "lodash": "~3.10.1",
     "pluralize": "~1.1.6",
     "winston": "~1.0.1"
