@@ -488,6 +488,7 @@ schema.post('remove', function(document, done)...
 This is a library Elasticsearch desperately needed for Node.js. Currently the official npm [elasticsearch](https://www.npmjs.com/package/elasticsearch) client has about 23,000 downloads per week, many of them would benefit from this library instead. Pull requests are welcome. There are [Mocha](https://github.com/mochajs/mocha) and [benchmark](https://www.npmjs.com/package/benchmark) tests in the root directory.
 
 #### TODO
+- Browser build.
 - Add support for [querying nested document arrays](https://www.elastic.co/guide/en/elasticsearch/guide/current/nested-query.html) with dot notation syntax.
 - Add [scrolling](https://www.elastic.co/guide/en/elasticsearch/reference/1.6/search-request-scroll.html)
 - Add a wrapper to enable streaming of document results.
