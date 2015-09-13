@@ -8,7 +8,6 @@ var Query = require('../lib/query.js'),
 
 describe('Query', function(){
 
-
   describe('.parseQuery()', function(){
     it('MatchAll query when no queryOptions provided', function(){
       var req = Query.parseRequest(index, type);
