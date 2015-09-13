@@ -56,7 +56,7 @@ function isConnected(){
 }
 
 function status(type){
-  if(!isConnected()) return Promise.reject(new ConnectionError(db.index));
+  if(!isConnected()) return Promise.reject(new ConnectionError(db.host));
 
   var args = {index: db.index};
   if(type) args.type = type;
@@ -65,7 +65,7 @@ function status(type){
 
 function createIndex(index, mappings){
   if(!index) return Promise.reject(new MissingArgumentError('index'));
-  if(!isConnected()) return errors.notConnected();
+  if(!isConnected()) return Promise.reject(new ConnectionError(db.host));
 
   return db.client.indices.create({
     index: index,
@@ -75,7 +75,7 @@ function createIndex(index, mappings){
 
 function removeIndex(index){
   if(!index) return Promise.reject(new MissingArgumentError('index'));
-  if(!isConnected()) return errors.notConnected();
+  if(!isConnected()) return Promise.reject(new ConnectionError(db.host));
 
   return db.client.indices.delete({index: index}).catch(function(){});
 }
@@ -125,7 +125,7 @@ function model(modelName, schema){
 }
 
 function stats(){
-  if(!isConnected()) return errors.notConnected();
+  if(!isConnected()) return Promise.reject(new ConnectionError(db.host));
   return db.client.indices.stats({index:db.index});
 }
 

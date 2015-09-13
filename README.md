@@ -234,7 +234,7 @@ Car.find()
 Finds a document by id. 'fields' argument is optional and specifies the fields of the document you'd like to include.
 
 ##### `.findByIds(Array ids, Object queryOptions)` -> `Document`
-Helper function. Same as .findById() but for multiple documents.
+Same as .findById() but for multiple documents.
 
 ##### `.findOne(Object/String match, Object queryOptions)` -> `Document`
 Same arguments as .find(). Returns the first matching document.
@@ -312,8 +312,6 @@ Example:
 Type: `String`
 
 A string to search all document fields with using Elasticsearch [QueryStringQuery](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html). This can be expensive, so use it sparingly.
-
-*Depending on your Elasticsearch version, you might not be able to combine this with not/must filters*
 
 Example:
 
