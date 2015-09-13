@@ -1,3 +1,7 @@
+0.1.4 / 2015-09-13
+===================
+  * Fix .toJSON() not retuning an object.
+
 0.1.3 / 2015-09-13
 ===================
   * Fix issue with 'client' property in core not available/undefined.

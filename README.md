@@ -65,7 +65,6 @@ var Car = elasticsearch.model('Car', carSchema);
   - [`.remove()`](#remove)
   - [`.update(Object data)`](#updateobject-data---document)
   - [`.set(Object data)`](#setobject-data---document)
-  - [`.toJSON()`](#tojson)
   - [`.toObject()`](#toobject)
 - [Model](#model)
   - [`.count()`](#count---object)
@@ -157,11 +156,8 @@ Completely overwrites the document with the data passed, and returns the new doc
 
 *Will remove any fields in the document that aren't passed.*
 
-##### `.toJSON()`
-Like Mongoose, strips all non-document properties from the instance and returns a JSON string.
-
 ##### `.toObject()`
-Like Mongoose, strips all non-document properties from the instance and returns an object.
+Like Mongoose, strips all non-document properties from the instance and returns a raw object.
 
 ### Model
 Model definitions returned from .model() in core include several static functions to help query and manage documents. Most functions are similar to Mongoose, but due to the differences in Elasticsearch, querying includes some extra advanced features.
