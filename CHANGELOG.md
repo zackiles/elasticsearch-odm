@@ -1,3 +1,7 @@
+0.1.8 / 2015-09-14
+===================
+  * Fix sort, page & per_page was not allowed for .findByIds() queries.
+
 0.1.7 / 2015-09-13
 ===================
   * auto-escaper query String Queries 'q queryOption' according to elasticsearch standards
