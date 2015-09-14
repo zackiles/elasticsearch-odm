@@ -69,6 +69,22 @@ describe('Schema-Hooks', function(){
     });
   });
 
+  it('hooks return an error if an error is passed to done', function(done){
+    schema.pre('save', function(cb){
+      cb(new Error());
+    });
+    schema.post('save', function(ctx, cb){
+      cb(new Error());
+    });
+    schema.hooks.execPre('save', context, function(err) {
+      err.should.be.instanceof(Error);
+      schema.hooks.execPost('save', null, [context], function(err) {
+        err.should.be.instanceof(Error);
+        done();
+      });
+    });
+  });
+
   it('hook instances are distinct between schemas', function(done){
     var schema1 = new Schema();
 

@@ -460,30 +460,39 @@ var carSchema = new elasticsearch.Schema({
   price: {type: 'double', ignore_malformed: true}
 });
 ```
-##### Hooks and Middleware
-Schemas include pre and post hooks that function similar to Mongoose. Currently, there are pre/post hooks for 'save' and 'remove'. In pre hooks 'this' is always the current document instance, where in post hooks the first argument is the document instance. Hooks must call done() when finished. Passing an Error to done() will cancel the current operation. For example, in a 'save' pre hook, passing an error to done() will cause the document not to be saved and will return your error to the save() callers rejection handler.
+#### Hooks and Middleware
+Schemas include pre and post hooks that function similar to Mongoose. Currently, there are pre/post hooks for 'save' and 'remove'.
 
-Example:
+**Pre Hooks**
+
+Same conventions as Mongoose. Function takes a done() callback that must be called when your function is finished. `this` is scoped to the current document. assing an Error to done() will cancel the current operation. For example, in a pre 'save' hook, passing an error to done() will cause the document not to be saved and will return your error to the save() callers rejection handler.
+
 ```js
 var schema = new elasticsearch.Schema(...);
 schema.pre('save', function(done){
   console.log(this); // this = the current document
-  done();
+  done(); // OR done(new Error('bad document'));
 });
-schema.post('save', function(document, done){
-  console.log(document); // document = the current document
-  done();
-});
-
-// Also remove hooks.
-schema.pre('remove', function(done)...
-schema.post('remove', function(document, done)...
 ```
 
-#### CONTRIBUTING
+**Post Hooks**
+
+Same conventions as Mongoose. Does not have a done() callback. Executed after the hooked method. The first argument is the current document which may or may not be a document instance (eg. post remove only receives the raw object as the document no longer exists).
+
+```js
+var schema = new elasticsearch.Schema(...);
+schema.post('remove', function(document){
+  console.log(document);
+});
+```
+
+### CHANGLELOG
+[See here.](https://github.com/zackiles/elasticsearch-odm/blob/master/CHANGELOG.md)
+
+### CONTRIBUTING
 This is a library Elasticsearch desperately needed for Node.js. Currently the official npm [elasticsearch](https://www.npmjs.com/package/elasticsearch) client has about 23,000 downloads per week, many of them would benefit from this library instead. Pull requests are welcome. There are [Mocha](https://github.com/mochajs/mocha) and [benchmark](https://www.npmjs.com/package/benchmark) tests in the root directory.
 
-#### TODO
+### TODO
 - Browser build.
 - Add support for [querying nested document arrays](https://www.elastic.co/guide/en/elasticsearch/guide/current/nested-query.html) with dot notation syntax.
 - Add [scrolling](https://www.elastic.co/guide/en/elasticsearch/reference/1.6/search-request-scroll.html)

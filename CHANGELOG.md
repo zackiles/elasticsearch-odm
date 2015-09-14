@@ -1,3 +1,10 @@
+0.1.6 / 2015-09-13
+===================
+  * version 0.1.6
+  * ensure post hooks do not receive callbacks
+  * improve test coverage of model hooks
+  * update readme with more info on model hooks
+
 0.1.5 / 2015-09-13
 ===================
   * Fix improper promise being returned from .find() calls, errors weren't being caught properly.

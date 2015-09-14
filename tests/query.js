@@ -131,7 +131,7 @@ describe('Query', function(){
       req.body.query.constant_score.filter.and[1].should.have.property('exists')
         .and.have.property('field', 'color');
     });
-//
+
     it('Must Filter query with shorthand syntax', function(){
       var req = Query.parseRequest(index, type, {name: 'Ford', color: 'Blue'});
       req.body.query.should.have.property('filtered');
