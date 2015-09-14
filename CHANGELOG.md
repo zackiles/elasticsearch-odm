@@ -1,6 +1,10 @@
+0.1.7 / 2015-09-13
+===================
+  * auto-escaper query String Queries 'q queryOption' according to elasticsearch standards
+  * fix toJSON for page reponse should return object
+
 0.1.6 / 2015-09-13
 ===================
-  * version 0.1.6
   * ensure post hooks do not receive callbacks
   * improve test coverage of model hooks
   * update readme with more info on model hooks
