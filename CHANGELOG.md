@@ -1,3 +1,7 @@
+0.1.10 / 2015-09-15
+===================
+  * Schema validation will now check the type of all elements in a native array.
+
 0.1.9 / 2015-09-15
 ===================
   * .connect() now returns nothing instead of status() in order to speed up connections.

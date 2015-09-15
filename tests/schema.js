@@ -72,6 +72,18 @@ describe('Schema', function(){
     should.exist(errors);
   });
 
+  it('validates the type of all elements in an array', function(){
+    var schema = new Schema({
+      names: [String],
+      company: {
+        location: [String]
+      }
+    });
+    var errors = schema.validate({names: ['Bob', 127329], company:{location: ['234', 23839]}});
+    errors.should.be.an.instanceOf(Error)
+      .and.has.property('errors').with.lengthOf(2);
+  });
+
   it('returns multiple errors for a bad document', function(){
     var schema = new Schema({
       name: String,
@@ -79,8 +91,7 @@ describe('Schema', function(){
     });
     var errors = schema.validate({name: 44, age: '2343'});
     errors.should.be.an.instanceOf(Error)
-      .and.has.property('errors')
-      .and.has.property('length');
+      .and.has.property('errors').with.lengthOf(2);
   });
 
   it('returns errors for a bad nested document', function(){
@@ -92,8 +103,7 @@ describe('Schema', function(){
     });
     var errors = schema.validate({name: 'Bob', company:{location: 234}});
     errors.should.be.an.instanceOf(Error)
-      .and.has.property('errors')
-      .and.has.property('length');
+      .and.has.property('errors').with.lengthOf(1);
   });
 
   it('returns errors for a missing required field', function(){
@@ -103,8 +113,7 @@ describe('Schema', function(){
     });
     var errors = schema.validate({age: 44});
     errors.should.be.an.instanceOf(Error)
-      .and.has.property('errors')
-      .and.has.property('length');
+      .and.has.property('errors').with.lengthOf(1);
   });
 
   it('returns an Elasticsearch properties mapping', function(){
@@ -119,5 +128,4 @@ describe('Schema', function(){
       .and.have.property('name')
       .and.have.property('type', 'string');
   });
-
 });

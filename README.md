@@ -5,7 +5,7 @@ Elasticsearch ODM
 ***Like Mongoose but for Elasticsearch.*** Define models, preform CRUD operations, and build advanced search queries. Most commands and functionality that exist in Mongoose exist in this library. All asynchronous functions use Bluebird Promises instead of callbacks.
 
 This is currently the only ODM/ORM library that exists for Elasticsearch on Node.js. [Waterline](https://github.com/balderdashy/waterline) has a [plugin](https://github.com/UsabilityDynamics/node-waterline-elasticsearch) for Elasticsearch but it is incomplete and doesn't exactly harness it's searching power.
-[Loopback](https://github.com/strongloop/loopback) has a storage [plugin](https://github.com/drakerian/loopback-connector-elastic-search), but it also doesn't focus on important parts of Elasticsearch, such as mappings and efficient queries. This library automatically handles merging and updating Elasticsearch mappings based on your schema definition. It has been used in production safely for over a year.
+[Loopback](https://github.com/strongloop/loopback) has a storage [plugin](https://github.com/drakerian/loopback-connector-elastic-search), but it also doesn't focus on important parts of Elasticsearch, such as mappings and efficient queries. This library automatically handles merging and updating Elasticsearch mappings based on your schema definition.
 
 ### Installation
 
@@ -101,6 +101,7 @@ Returns a promise that is reolved when the connection is complete. Can be passed
 This method should be called at the start of your application.
 
 ***If the index name does not exist, it is automatically created for you.***
+
 *You can also add any of the [Elasticsearch specific options](https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/current/configuration.html), like SSL configs.*
 
 Example:
@@ -121,6 +122,7 @@ elasticsearch.connect({
 // OR
 elasticsearch.connect('my-index'); // default host localhost:9200
 ```
+
 ##### `new Schema(Object options)` -> `Schema`
 Returns a new schema definition to be used for models.
 
@@ -331,7 +333,7 @@ This is a 'must' [Bool Filter](https://www.elastic.co/guide/en/elasticsearch/ref
 
 ***Elasticsearches internal [Tokenizers](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-tokenizers.html) are used, and fields are analyzed.***
 
-*You Can specify nested fields using dot notation.*
+*You can query nested fields using dot notation.*
 
 Example:
 
@@ -355,7 +357,7 @@ Type: `Object`
 The same as [must](#must), but matches documents where the key value pairs DON'T match.
 This is a 'must_not' [Bool Filter](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-bool-filter.html) query.
 
-*Can specify nested fields using dot notation.*
+*You can query nested fields using dot notation.*
 
 Example:
 
