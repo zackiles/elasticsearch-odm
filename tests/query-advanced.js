@@ -8,8 +8,10 @@ var app = require('../index'),
 var Model = app.model('Jump');
 
 describe('Query-Advanced', function(){
+  // some of the calls use refresh, it is slow.
+  this.timeout(20000);
+
   before(function(done){
-    this.timeout(10000);
     app.connect('esodm-test')
     .then(function(){
       done();

@@ -25,7 +25,7 @@ var db = {
 };
 
 function connect(options){
-  if(isConnected()) return status(db.index);
+  if(isConnected()) return Promise.resolve();
 
   // can pass just the index name, or a client configuration object.
   if(_.isString(options)){
@@ -41,11 +41,11 @@ function connect(options){
 
   return db.client.indices.exists({index: db.index}).then(function(result){
     if(result){
-      return status(db.index);
+      return Promise.resolve();
     }else{
       // if the index doesn't exist, then create it.
       return createIndex(db.index).then(function(){
-        return status(db.index);
+        return Promise.resolve();
       });
     }
   });

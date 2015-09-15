@@ -78,7 +78,9 @@ describe('Schema', function(){
       age: Number
     });
     var errors = schema.validate({name: 44, age: '2343'});
-    errors.should.be.an.instanceOf(Array).with.lengthOf(2);
+    errors.should.be.an.instanceOf(Error)
+      .and.has.property('errors')
+      .and.has.property('length');
   });
 
   it('returns errors for a bad nested document', function(){
@@ -89,7 +91,9 @@ describe('Schema', function(){
       }
     });
     var errors = schema.validate({name: 'Bob', company:{location: 234}});
-    errors.should.be.an.instanceOf(Array).with.lengthOf(1);
+    errors.should.be.an.instanceOf(Error)
+      .and.has.property('errors')
+      .and.has.property('length');
   });
 
   it('returns errors for a missing required field', function(){
@@ -98,7 +102,9 @@ describe('Schema', function(){
       age: Number
     });
     var errors = schema.validate({age: 44});
-    errors.should.be.an.instanceOf(Array).with.lengthOf(1);
+    errors.should.be.an.instanceOf(Error)
+      .and.has.property('errors')
+      .and.has.property('length');
   });
 
   it('returns an Elasticsearch properties mapping', function(){

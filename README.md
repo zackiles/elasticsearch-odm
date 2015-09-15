@@ -112,6 +112,7 @@ var elasticsearch = require('elasticsearch-odm');
 elasticsearch.connect({
   host: 'localhost:9200',
   index: 'my-index',
+  logging: false, // true by default when NODE_ENV=development
   ssl: {
     ca: fs.readFileSync('./cacert.pem'),
     rejectUnauthorized: true

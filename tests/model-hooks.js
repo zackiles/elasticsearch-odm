@@ -8,7 +8,7 @@ var schema,
     model;
 
 describe('Model-Hooks', function(){
-  this.timeout(10000);
+  this.timeout(20000);
 
   before(function(done){
     app.connect('esodm-test').then(function(){
