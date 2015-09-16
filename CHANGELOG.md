@@ -1,3 +1,7 @@
+0.1.11 / 2015-09-16
+===================
+  * Fix not being able to match filters against arrays of values like `.find({tags: ['tag1', 'tag2']}`
+
 0.1.10 / 2015-09-15
 ===================
   * Schema validation will now check the type of all elements in a native array.

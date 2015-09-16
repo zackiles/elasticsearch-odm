@@ -25,7 +25,8 @@ describe('Query-Advanced', function(){
     before(function(done){
       Model.create({
         name: Date.now().toString(),
-        slug: Date.now().toString()
+        slug: Date.now().toString(),
+        keys: ['a', 'b']
       }, {refresh: true})
       .then(function(doc){
         self.doc = doc;
@@ -41,7 +42,16 @@ describe('Query-Advanced', function(){
         res[0].should.have.property('name', self.doc.name);
         res[0].should.have.property('slug', self.doc.slug);
         done();
-      })
+      }).catch(done);
+    });
+
+    it('must field values can be an array', function(done){
+      Model.find({keys: self.doc.keys})
+      .then(function(res){
+        res.should.be.instanceof(Array);
+        res[0].should.have.property('keys', self.doc.keys);
+        done();
+      }).catch(done);
     });
   });
 });
