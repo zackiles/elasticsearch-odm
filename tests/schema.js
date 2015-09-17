@@ -115,17 +115,4 @@ describe('Schema', function(){
     errors.should.be.an.instanceOf(Error)
       .and.has.property('errors').with.lengthOf(1);
   });
-
-  it('returns an Elasticsearch properties mapping', function(){
-    var schema = new Schema({
-      name: String,
-      company: {
-        location: {type: String, required: true}
-      }
-    });
-    var mapping = schema.toMapping();
-    mapping.should.have.property('properties')
-      .and.have.property('name')
-      .and.have.property('type', 'string');
-  });
 });

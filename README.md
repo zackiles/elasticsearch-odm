@@ -504,3 +504,4 @@ This is a library Elasticsearch desperately needed for Node.js. Currently the of
 - Allow methods to call Elasticsearch facets.
 - Performance tweak application, fix garbage collection issues, and do benchmark tests.
 - Integrate npm 'friendly' for use with expanding/collapsing parent/child documents.
+- Use [source filtering](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-get.html#get-source-filtering) instead of fields.

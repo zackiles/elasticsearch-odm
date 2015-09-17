@@ -1,3 +1,7 @@
+0.1.12 / 2015-09-17
+===================
+  * Fix undefined document on update with schema validation.
+
 0.1.11 / 2015-09-16
 ===================
   * Fix not being able to match filters against arrays of values like `.find({tags: ['tag1', 'tag2']}`
