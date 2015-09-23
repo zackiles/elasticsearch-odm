@@ -1,3 +1,7 @@
+0.1.13 / 2015-09-23
+===================
+  * Fix missing PagedResponse when no results exist.
+
 0.1.12 / 2015-09-17
 ===================
   * Fix undefined document on update with schema validation.

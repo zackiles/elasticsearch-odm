@@ -53,5 +53,17 @@ describe('Query-Advanced', function(){
         done();
       }).catch(done);
     });
+
+    it('Paged queries return an empty PagedResult when no results are found', function(done){
+      Model.find({fasfasf: 'asfasfasfasf'}, {page: 1, per_page: 2})
+      .then(function(res){
+        res.should.have.property('total', 0);
+        res.should.have.property('pages', 0);
+        res.should.have.property('page', 1);
+        res.should.have.property('hits', []);
+        done();
+      }).catch(done);
+    });
+
   });
 });
