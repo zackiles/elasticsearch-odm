@@ -24,6 +24,21 @@ var db = {
   models: {}
 };
 
+var CONNECTED = false;
+
+var mappingQueue = [];
+var handleMappingQueue = function(){
+  if(!mappingQueue.length) return Promise.resolve();
+  return Promise.map(mappingQueue , function(v){
+    return db.client.indices.putMapping({
+      index: db.index,
+      type: v.type,
+      ignore_conflicts: true,
+      body:v.mapping
+    });
+  });
+};
+
 function connect(options){
   if(isConnected()) return Promise.resolve();
 
@@ -41,18 +56,19 @@ function connect(options){
 
   return db.client.indices.exists({index: db.index}).then(function(result){
     if(result){
-      return Promise.resolve();
+      return handleMappingQueue();
     }else{
       // if the index doesn't exist, then create it.
-      return createIndex(db.index).then(function(){
-        return Promise.resolve();
-      });
+      return createIndex(db.index).then(handleMappingQueue);
     }
+  })
+  .then(function(results){
+    return Promise.resolve();
   });
 }
 
 function isConnected(){
-  return _.isEmpty(db.client) === false;
+  return CONNECTED;
 }
 
 function status(type){
@@ -109,8 +125,7 @@ function model(modelName, schema){
   modelInstance.model = {
     type: pluralize(modelName).toLowerCase(),
     name: modelName,
-    constructor: modelInstance,
-    isMappingSynced: false
+    constructor: modelInstance
   };
 
   if(schema) {
@@ -118,10 +133,25 @@ function model(modelName, schema){
 
     // user can provide their own type name, default is pluralized.
     if(schema.options.type) modelInstance.model.type = schema.options.type;
+
+    // update the mapping asynchronously.
+    var mapping = {};
+    mapping[modelInstance.model.type] = schema.toMapping();
+
+    // If we're not currently connected, push the mapping update call to the queue.'
+    if(isConnected()){
+      return db.client.indices.putMapping({
+        index: db.index,
+        type: modelInstance.model.type,
+        ignore_conflicts: true,
+        body:mapping
+      });
+    }else{
+      mappingQueue.push({type: modelInstance.model.type, mapping: mapping});
+    }
   }
 
-  db.models[modelName] = modelInstance;
-  return db.models[modelName];
+  return db.models[modelName] = modelInstance;
 }
 
 function stats(){

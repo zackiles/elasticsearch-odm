@@ -1,3 +1,8 @@
+0.2.0 / 2015-11-21
+===================
+  * lazy update elasticsearch mappings (generated from schemas) on initialization. set ignore_conflicts=false to avoid breaking changes. note: you can not change the type after it is already mapped, this means no changing the type of a property in your schema definitions.
+  * remove store property from default mappings.
+
 0.1.13 / 2015-09-23
 ===================
   * Fix missing PagedResponse when no results exist.

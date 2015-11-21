@@ -15,15 +15,18 @@ describe('Schema', function(){
       },
       vendors: [{
         name: String,
-        purchases: {[
+        purchases: {
           name: String
-        }]
+        }
       }]
     });
     var mapping = schema.toMapping();
     mapping.should.have.property('properties')
       .and.have.property('name')
       .and.have.property('type', 'string');
+
+    mapping.properties.should.have.property('vendors');
+
   });
 });
 

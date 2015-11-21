@@ -22,25 +22,20 @@
       "properties": {
         "id": {
           "type": "string",
-          "store": true,
           "index": "not_analyzed"
         },
         "createdOn": {
-          "type": "date",
-          "store": true
+          "type": "date"
         },
         "updatedOn": {
-          "type": "date",
-          "store": true
+          "type": "date"
         },
         "name": {
           "type": "string",
-          "store": true,
           "index": "not_analyzed"
         },
         "slug": {
           "type": "string",
-          "store": true,
           "index": "not_analyzed"
         }
       }
