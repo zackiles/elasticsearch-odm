@@ -47,7 +47,7 @@ function connect(options){
     db.index = options;
   }else if(_.isObject(options)){
     if(!options.index) return Promise.reject(new MissingArgumentError('options.index'));
-    db = _.extend(db, options);
+    db = _.assign(db, options);
   }else{
     return Promise.reject(new MissingArgumentError('options'));
   }
@@ -113,12 +113,17 @@ function model(modelName, schema){
 
   // create a neweable function object.
   function modelInstance(data){
-    Model.call(this, data);
+    var self = this;
+    // Add any user supplied schema instance methods.
+    if(schema){
+      _.assign(self, schema.methods);
+    }
+    Model.call(self, data);
   }
   utils.inherits(modelInstance, Model);
 
   // add crud/query static functions.
-  _.extend(modelInstance, defaultMethods);
+  _.assign(modelInstance, defaultMethods);
 
   modelInstance.db = db;
 
@@ -130,11 +135,13 @@ function model(modelName, schema){
 
   if(schema) {
     modelInstance.model.schema = schema;
+    // Add any user supplied schema static methods.
+    _.assign(modelInstance, schema.statics);
 
-    // user can provide their own type name, default is pluralized.
+    // User can provide their own type name, default is pluralized.
     if(schema.options.type) modelInstance.model.type = schema.options.type;
 
-    // update the mapping asynchronously.
+    // Update the mapping asynchronously.
     var mapping = {};
     mapping[modelInstance.model.type] = schema.toMapping();
 

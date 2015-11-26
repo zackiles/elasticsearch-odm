@@ -1,7 +1,11 @@
+0.3.0 / 2015-11-25
+===================
+  * Add schema static and instance methods.
+
 0.2.0 / 2015-11-21
 ===================
-  * lazy update elasticsearch mappings (generated from schemas) on initialization. set ignore_conflicts=false to avoid breaking changes. note: you can not change the type after it is already mapped, this means no changing the type of a property in your schema definitions.
-  * remove store property from default mappings.
+  * Lazy update elasticsearch mappings (generated from schemas) on initialization. set ignore_conflicts=true to avoid breaking changes. note: you can not change the type after it is already mapped, this means no changing the type of a property in your schema definitions.
+  * Remove store property from default mappings.
 
 0.1.13 / 2015-09-23
 ===================
@@ -22,7 +26,7 @@
 0.1.9 / 2015-09-15
 ===================
   * .connect() now returns nothing instead of status() in order to speed up connections.
-  * schemas now return a ValidationError object instead of array of errors. this is the same as mongoose.
+  * Schemas now return a ValidationError object instead of array of errors. this is the same as mongoose.
 
 0.1.8 / 2015-09-14
 ===================
@@ -30,14 +34,14 @@
 
 0.1.7 / 2015-09-13
 ===================
-  * auto-escaper query String Queries 'q queryOption' according to elasticsearch standards.
-  * fix toJSON for page reponse should return object.
+  * Auto-escaper query String Queries 'q queryOption' according to elasticsearch standards.
+  * Fix toJSON for page reponse should return object.
 
 0.1.6 / 2015-09-13
 ===================
-  * ensure post hooks do not receive callbacks.
-  * improve test coverage of model hooks.
-  * update readme with more info on model hooks.
+  * Ensure post hooks do not receive callbacks.
+  * Improve test coverage of model hooks.
+  * Update readme with more info on model hooks.
 
 0.1.5 / 2015-09-13
 ===================

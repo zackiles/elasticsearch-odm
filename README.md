@@ -92,6 +92,7 @@ var Car = elasticsearch.model('Car', carSchema);
   - [`exists`](#exists)
 - [Schemas](#schemas)
   - [`Hooks and Middleware`](#hooks-and-middleware)
+  - [`Static and Instance Methods`](#static-and-instance-methods)
 
 ### Core
 Core methods can be called directly on the Elasticsearch ODM instance. These include methods to configure, connect, and get information from your Elasticsearch database. Most methods act upon the [official Elasticsearch client](https://www.npmjs.com/package/elasticsearch).
@@ -486,6 +487,24 @@ Same conventions as Mongoose. Does not have a done() callback. Executed after th
 var schema = new elasticsearch.Schema(...);
 schema.post('remove', function(document){
   console.log(document);
+});
+```
+
+#### Static and Instance Methods
+
+Add methods to your schema with the same convention as Mongoose.
+
+```js
+// Instance method.
+var schema = new elasticsearch.Schema(...);
+
+schema.methods.getFullName = function(){
+  return this.firstName + ' ' + this.lastName;
+});
+
+// Static method.
+schema.statics.findByColor = function(color){
+  return this.find({color: color});
 });
 ```
 

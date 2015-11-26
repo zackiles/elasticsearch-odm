@@ -5,7 +5,7 @@ var Schema = require('../lib/schema.js'),
     _ = require('lodash'),
     should = require('should');
 
-describe('Schema', function(){
+describe('Schema-Mappings', function(){
 
   it('returns an Elasticsearch properties mapping', function(){
     var schema = new Schema({
