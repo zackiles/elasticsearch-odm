@@ -55,6 +55,9 @@ function connect(options){
   module.exports.client = db.client = Client.makeClient(db);
 
   return db.client.indices.exists({index: db.index}).then(function(result){
+    //No error - connected
+    CONNECTED = true;
+    
     if(result){
       return handleMappingQueue();
     }else{
