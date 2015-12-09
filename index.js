@@ -7,7 +7,7 @@ var logger = require('./lib/logger'),
     pluralize = require('pluralize'),
     utils = require('./lib/utils'),
     MissingArgumentError = errors.MissingArgumentError,
-    ConnectionError = errors.ConnectionErrorr,
+    ConnectionError = errors.ConnectionError,
     Model = require('./lib/model'),
     defaultMethods = require('./lib/default-methods'),
     defaultMappings = require('./default-mappings'),
@@ -55,6 +55,9 @@ function connect(options){
   module.exports.client = db.client = Client.makeClient(db);
 
   return db.client.indices.exists({index: db.index}).then(function(result){
+    //No error - connected
+    CONNECTED = true;
+    
     if(result){
       return handleMappingQueue();
     }else{
@@ -97,8 +100,8 @@ function removeIndex(index){
 }
 
 function model(modelName, schema){
-  if(!modelName) return Promise.reject(new MissingArgumentError('modelName'));
-  if(schema && !(schema instanceof Schema)) return Promise.reject(new errors.ElasticsearchError('Invalid schema for "'+modelName+'".'));
+  if(!modelName) throw new MissingArgumentError('modelName');
+  if(schema && !(schema instanceof Schema)) throw new errors.ElasticsearchError('Invalid schema for "'+modelName+'".');
 
   if(db.models[modelName]){
 
@@ -147,7 +150,7 @@ function model(modelName, schema){
 
     // If we're not currently connected, push the mapping update call to the queue.'
     if(isConnected()){
-      return db.client.indices.putMapping({
+      db.client.indices.putMapping({
         index: db.index,
         type: modelInstance.model.type,
         ignore_conflicts: true,

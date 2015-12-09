@@ -1,3 +1,9 @@
+0.3.1 / 2016-08-12
+===================
+  * Fixed an issue relating to constant_score queries.
+  * Temp workaround for float/double validator not accepting numbers without decimals.
+  * Fixed an edge case for connection issues.
+
 0.3.0 / 2015-11-25
 ===================
   * Add schema static and instance methods.
