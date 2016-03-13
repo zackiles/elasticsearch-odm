@@ -7,7 +7,7 @@ var logger = require('./lib/logger'),
     pluralize = require('pluralize'),
     utils = require('./lib/utils'),
     MissingArgumentError = errors.MissingArgumentError,
-    ConnectionError = errors.ConnectionErrorr,
+    ConnectionError = errors.ConnectionError,
     Model = require('./lib/model'),
     defaultMethods = require('./lib/default-methods'),
     defaultMappings = require('./default-mappings'),
@@ -55,6 +55,9 @@ function connect(options){
   module.exports.client = db.client = Client.makeClient(db);
 
   return db.client.indices.exists({index: db.index}).then(function(result){
+    //No error - connected
+    CONNECTED = true;
+    
     if(result){
       return handleMappingQueue();
     }else{
