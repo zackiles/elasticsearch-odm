@@ -1,0 +1,30 @@
+# in order to use 'trusty' dist, need this.
+# see https://docs.travis-ci.com/user/trusty-ci-environment/
+sudo: required
+
+# trust dist provides a modern build chain (as opposed to 'precise' dist)
+# which absolves us from having to install compilers and stuff
+dist: trusty
+
+language: node_js
+
+env:
+  # Nothing needed
+
+matrix:
+  include:
+    - node_js: '6'
+      env: TARGET=test
+    - node_js: '5'
+      env: TARGET=test
+    - node_js: '4'
+      env: TARGET=test
+
+before_install:
+  # nothing to do
+
+script: travis_retry make $TARGET
+
+notifications:
+  on_success: change
+  on_failure: always
