@@ -4,7 +4,7 @@
   "description": "Like Mongoose but for Elasticsearch. Define models, preform CRUD operations, and build advanced search queries.",
   "main": "index.js",
   "scripts": {
-    "test": "NODE_ENV=test ./node_modules/.bin/mocha --check-leaks ./tests/**.js"
+    "test": "./node_modules/.bin/mocha --check-leaks ./tests/**.js"
   },
   "repository": {
     "type": "git",
@@ -27,6 +27,9 @@
     "mapping"
   ],
   "author": "Zachary Iles <zack.iles@gmail.com>",
+  "contributors": [
+    "BlouBlou <bloublou2014@gmail.com>"
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/zackiles/elasticsearch-odm/issues"
@@ -35,9 +38,9 @@
   "dependencies": {
     "bluebird": "~2.9.34",
     "dot-object": "^1.1.0",
-    "elasticsearch": "~8.0.1",
+    "elasticsearch": "^11.0.1",
     "kareem": "^1.0.1",
-    "lodash": "~3.10.1",
+    "lodash": "^4.13.1",
     "pluralize": "~1.1.6",
     "winston": "~1.0.1"
   },
