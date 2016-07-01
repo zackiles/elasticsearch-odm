@@ -11,14 +11,24 @@ describe('Query-Advanced', function(){
   // some of the calls use refresh, it is slow.
   this.timeout(20000);
 
-  before(function(done){
-    app.connect('esodm-test')
-    .then(function(){
-      done();
-    })
-    .catch(done);
+  before(function (done) {
+    this.timeout(10000);
+    app
+      .connect('esodm-test')
+      .then(function () {
+        done();
+      })
+      .catch(done);
   });
 
+  after(function (done) {
+    app
+      .removeIndex('esodm-test')
+      .then(function () {
+        done();
+      })
+      .catch(done);
+  });
 
   describe('Filters', function(){
     var self = this;

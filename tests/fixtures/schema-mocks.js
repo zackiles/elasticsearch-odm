@@ -89,6 +89,6 @@ function types(){
     binaryString: 'binary',
     binaryArray: ['binary'],
     binaryObjString: { type: 'binary' },
-    binaryObjArrayString: { type: ['binary'] },
+    binaryObjArrayString: { type: ['binary'] }
   };
 }

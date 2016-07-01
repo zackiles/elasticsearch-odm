@@ -7,11 +7,24 @@ var Car = app.model('car');
 var car = new Car({color:'Blue'});
 
 describe('Model', function(){
-  before(function(done){
+  
+  before(function (done) {
     this.timeout(10000);
-    app.connect('esodm-test').then(function(){
-      done();
-    }).catch(done);
+    app
+      .connect('esodm-test')
+      .then(function () {
+        done();
+      })
+      .catch(done);
+  });
+
+  after(function (done) {
+    app
+      .removeIndex('esodm-test')
+      .then(function () {
+        done();
+      })
+      .catch(done);
   });
 
   describe('Instance Methods', function(){
@@ -86,18 +99,16 @@ describe('Model', function(){
   });
 
   describe('Model Schemas', function(){
-    var bookSchema = new app.Schema({author: String});
-    var Book;
-    var book;
+    let bookSchema = new app.Schema({author: String});
 
     it('creates a new model with schema', function(done){
-       Book = app.model('Book', bookSchema);
+       let Book = app.model('Book', bookSchema);
        done();
     });
 
-    it('creates an elasticsearch mapping', function(done){
-      Book = app.model('Book', bookSchema);
-      var mapping = Book.toMapping();
+    it('creates an app mapping', function(done){
+      let Book = app.model('Book', bookSchema);
+      let mapping = Book.toMapping();
       mapping.should.have.property(Book.model.type)
       .and.have.property('properties')
       .and.have.property('author')
@@ -106,37 +117,39 @@ describe('Model', function(){
     });
 
     it('validates a good document', function(done){
-      book = new Book({author:'Jim'});
+      let Book = app.model('Book', bookSchema);
+      let book = new Book({author:'Jim'});
       var errors = book.validate(book.toObject());
       should.not.exist(errors);
       done();
     });
 
     it('invalidates a document with wrong field type', function(done){
-      book = new Book({author: 34634634});
-      var errors = book.validate(book.toObject());
+      let Book = app.model('Book', bookSchema);
+      let book = new Book({author: 34634634});
+      let errors = book.validate(book.toObject());
       should.exist(errors);
       done();
     });
 
     it('setting options.type for scehma forces a customt type name', function(done){
-      var schema = new app.Schema({author: String}, {type: 'CustomType'})
-      var SomeModel =  app.model('SomeModel', schema);
+      let schema = new app.Schema({author: String}, {type: 'CustomType'});
+      let SomeModel =  app.model('SomeModel', schema);
       SomeModel.model.should.have.property('type', 'CustomType');
       done();
     });
 
     it('invalidates a document with missing required field', function(done){
-      var CD =  app.model('CD', new app.Schema({author: String, name: { type: String, required: true} }));
-      var cd = new CD({author: 'Dr Dre'});
-      var errors = cd.validate(cd.toObject());
+      let CD =  app.model('CD', new app.Schema({author: String, name: { type: String, required: true} }));
+      let cd = new CD({author: 'Dr Dre'});
+      let errors = cd.validate(cd.toObject());
       should.exist(errors);
       done();
     });
 
     it('it wont save a document with missing required field', function(done){
-      var Dog =  app.model('Dog', new app.Schema({breed: String}));
-      var dog = new Dog({breed: true});
+      let Dog =  app.model('Dog', new app.Schema({breed: String}));
+      let dog = new Dog({breed: true});
       dog.save().then(function(results){
         done(new Error('The invalid document still saved, it should have thrown an error.'));
       }).catch(function(err){
