@@ -25,6 +25,19 @@ matrix:
 before_install:
   # nothing to do
 
+
+services:
+  # 1. needed to test
+  # - elasticsearch
+
+
+before_script:
+  # 1. ElasticSearch takes few seconds to start, to make sure it is available when the build script runs
+  # add a small delay to your build script:
+  # - sleep 10
+  # or 2. install specific version of elasticsearch
+  - curl -O https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/2.3.3/elasticsearch-2.3.3.deb && sudo dpkg -i --force-confnew elasticsearch-2.3.3.deb && sudo service elasticsearch restart
+
 script: 'npm run-script test'
 
 notifications:
