@@ -197,6 +197,8 @@ There are four ways to call .find() and it's siblings. You can mix and match sty
 - Passing [Query Options](#query-options) (match can be set to null/empty) `.find({}, {must: {active: true, sort: 'createdOn'}}}`
 - Use chaining options (alias for QueryOptions) `.find({}).must({active: true}).sort('createdOn').then(..)`
 
+note : current version support up to 10000 results due to elasticsearch default limitations.
+
 Unlike mongoose, finding exact matches requires the fields in your mapping to be set to 'not_analyzed'. By default `{index: not_analyzed}` is added to all string fields in your Schema unless you override it.
 *Depending on the [analyzer](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-analyzers.html) in your [mapping](https://www.elastic.co/guide/en/elasticsearch/guide/current/mapping-intro.html), find queries like must, not, and matches may not find any results.*
 
@@ -528,3 +530,6 @@ This is a library Elasticsearch desperately needed for Node.js. Currently the of
 - Performance tweak application, fix garbage collection issues, and do benchmark tests.
 - Integrate npm 'friendly' for use with expanding/collapsing parent/child documents.
 - Use [source filtering](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-get.html#get-source-filtering) instead of fields.
+
+Elasticsearch 2.x :
+- Find requests : use scroll api in order to get more than 10000 results if needed
