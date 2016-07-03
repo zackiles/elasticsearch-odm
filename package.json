@@ -1,6 +1,6 @@
 {
   "name": "elasticsearch-odm",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Like Mongoose but for Elasticsearch. Define models, preform CRUD operations, and build advanced search queries.",
   "main": "index.js",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/zackiles/elasticsearch-odm.git"
+    "url": "git+https://github.com/bloublou2014/elasticsearch-odm.git"
   },
   "keywords": [
     "elasticsearch",
@@ -32,9 +32,9 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/zackiles/elasticsearch-odm/issues"
+    "url": "https://github.com/bloublou2014/elasticsearch-odm/issues"
   },
-  "homepage": "https://github.com/zackiles/elasticsearch-odm#readme",
+  "homepage": "https://github.com/bloublou2014/elasticsearch-odm#readme",
   "dependencies": {
     "bluebird": "~2.9.34",
     "dot-object": "^1.1.0",
