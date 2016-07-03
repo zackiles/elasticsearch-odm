@@ -1,7 +1,9 @@
 'use-strict';
 
-var app = require('../index'),
-  should = require('should');
+var requireNew = require('require-new'),
+  app = requireNew('../index'),
+  should = require('should'),
+  helper = require('./helper');
 
 var Book = app.model('Book');
 
@@ -9,8 +11,7 @@ describe('Default Methods', function () {
 
   before(function (done) {
     this.timeout(10000);
-    app
-      .connect('esodm-test')
+    helper.connect(app)
       .then(function () {
         done();
       })
@@ -18,8 +19,8 @@ describe('Default Methods', function () {
   });
 
   after(function (done) {
-    app
-      .removeIndex('esodm-test')
+    this.timeout(10000);
+    helper.remove(app)
       .then(function () {
         done();
       })
@@ -59,6 +60,8 @@ describe('Default Methods', function () {
   describe('.find()', function () {
     this.timeout(10000);
     var book;
+
+
     before(function (done) {
       book = new Book({
         name: 'Gulliver\'s Travels',
@@ -72,9 +75,13 @@ describe('Default Methods', function () {
     });
 
     it('finds a document by match query', function (done) {
+      // term to find is part of book.name since field is by default analyzed
+      // documentation (of odm) says that by default string field are set as not analyzed
+      // seems not the case, a test must be set prior to this one to check if book has correct mapping
       Book.find({name: book.name})
         .then(function (results) {
           results.should.be.instanceof(Array);
+          results.should.not.be.empty();
           results[0].should.have.property('name', book.name);
           done();
         })

@@ -1,33 +1,34 @@
 'use-strict';
 
-var app = require('../index.js'),
-  should = require('should');
+var requireNew = require('require-new'),
+  app = requireNew('../index.js'),
+  should = require('should'),
+  helper = require('./helper');
 
 var schema,
   Model,
   model;
 
 describe('Model-Hooks', function () {
-  var indexName = 'esodm-test';
   this.timeout(20000);
 
   before(function (done) {
-    app.connect(indexName)
+    this.timeout(10000);
+    helper.connect(app)
       .then(function () {
         done();
       })
       .catch(done);
   });
 
-  after(function(done){
-    app
-      .removeIndex('esodm-test')
-      .then(function(){
+  after(function (done) {
+    this.timeout(10000);
+    helper.remove(app)
+      .then(function () {
         done();
       })
       .catch(done);
   });
-
   describe('.save()', function () {
 
     beforeEach(function () {
@@ -37,7 +38,7 @@ describe('Model-Hooks', function () {
     it('pre hook executes', function (done) {
       schema.pre('save', function (cb) {
         should.exist(cb);
-        should.exist(this)
+        should.exist(this);
         this.should.have.property('name', 'something');
         this.name = 'newthing';
         cb();

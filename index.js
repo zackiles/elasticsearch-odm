@@ -62,12 +62,20 @@ function connect(options) {
       return handleMappingQueue();
     } else {
       // if the index doesn't exist, then create it.
-      return createIndex(db.index).then(handleMappingQueue);
+      return createIndex(db.index, db.options).then(handleMappingQueue);
     }
   })
     .then(function (results) {
       return Promise.resolve();
     });
+}
+
+function disconnect() {
+  if (!isConnected()) return Promise.resolve();
+
+  db.client.close();
+  CONNECTED = false;
+  return Promise.resolve();
 }
 
 function isConnected() {
@@ -179,6 +187,7 @@ function stats() {
 module.exports = {
   client: db.client,
   connect: connect,
+  disconnect: disconnect,
   isConnected: isConnected,
   status: status,
   stats: stats,

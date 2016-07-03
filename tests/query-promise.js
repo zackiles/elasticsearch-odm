@@ -1,21 +1,27 @@
 'use-strict';
 
-var app = require('../index'),
+var requireNew = require('require-new'),
+  app = requireNew('../index'),
   _ = require('lodash'),
   Promise = require('bluebird'),
-  should = require('should');
+  should = require('should'),
+  helper = require('./helper');
 
 var Car = app.model('Car');
 var car;
 
 describe('Query-Promise', function () {
+
   before(function (done) {
     this.timeout(10000);
-    app
-      .connect('esodm-test')
+    helper.connect(app)
       .then(function () {
         car = new Car({name: 'Ford', slug: 'someslug'});
         return car.save();
+      })
+      .then(function () {
+        // force index refresh
+        return helper.refresh(app);
       })
       .then(function () {
         done();
@@ -24,8 +30,9 @@ describe('Query-Promise', function () {
   });
 
   after(function (done) {
-    app
-      .removeIndex('esodm-test')
+    this.timeout(10000);
+    console.log("deleting");
+    helper.remove(app)
       .then(function () {
         done();
       })
@@ -34,12 +41,13 @@ describe('Query-Promise', function () {
 
   it('wraps a .find() query', function (done) {
     Car.find()
-      .sort('createdOn')
-      .missing('asfasfasf')
       .exists('name')
       .must({name: car.name, slug: car.slug})
+      .missing('asfasfasf')
+      .sort('createdOn')
       .then(function (res) {
         res.should.be.instanceof(Array);
+        res.should.not.be.empty();
         res[0].should.have.property('name', car.name);
         res[0].should.have.property('slug', car.slug);
         done();
@@ -56,12 +64,4 @@ describe('Query-Promise', function () {
       }).catch(done);
   });
 
-  after(function (done) {
-    this.timeout(10000);
-    Car.findAndRemove({name: car.name})
-      .then(function () {
-        done();
-      })
-      .catch(done);
-  });
 });
