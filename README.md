@@ -154,7 +154,7 @@ esodm.connect('my-index')
   })
   .then(esodm.disconnect)
   .then(function(){
-    console.log('disconnected);
+    console.log('disconnected');
   });
 ```
 
