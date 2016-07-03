@@ -11,21 +11,18 @@ language: node_js
 env: TARGET=test
   # Nothing needed
 
-matrix:
-  include:
-    - node_js: 'node'
-    - node_js: '6'
-    - node_js: '5'
-    - node_js: '4'
+node_js:
+  - 'node'
+  - '6'
+  - '5'
+  - '4'
 
 #before_install:
   # nothing to do
 
-
 #services:
   # 1. needed to test
   # - elasticsearch
-
 
 before_script:
   # 1. ElasticSearch takes few seconds to start, to make sure it is available when the build script runs
