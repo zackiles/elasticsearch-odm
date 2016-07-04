@@ -36,16 +36,16 @@
   },
   "homepage": "https://github.com/bloublou2014/elasticsearch-odm#readme",
   "dependencies": {
-    "bluebird": "~2.9.34",
+    "bluebird": "^3.4.1",
     "dot-object": "^1.1.0",
     "elasticsearch": "^11.0.1",
     "kareem": "^1.0.1",
     "lodash": "^4.13.1",
-    "pluralize": "~1.1.6",
-    "winston": "~1.0.1"
+    "pluralize": "^3.0.0",
+    "winston": "^2.2.0"
   },
   "devDependencies": {
-    "benchmark": "^1.0.0",
+    "benchmark": "^2.1.0",
     "mocha": "^2.3.0",
     "require-new": "^1.1.0",
     "should": "^9.0.2"
