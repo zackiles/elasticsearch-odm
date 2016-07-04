@@ -4,8 +4,7 @@
 var Promise = require('bluebird'),
   _ = require('lodash'),
   should = require('should'),
-  defaultMapping = require('../default-mappings.json');
-elasticsearch = require('elasticsearch');
+  elasticsearch = require('elasticsearch');
 
 var helper = function () {
   var module = {};
@@ -16,7 +15,7 @@ var helper = function () {
 
   var testIndexName = 'eodm-test';
 
-  var testOptions = _.defaultsDeep({
+  var testOptions = {
     // fastest index creation for elasticsearch
     settings: {
       index: {
@@ -24,13 +23,13 @@ var helper = function () {
         number_of_replicas: 0
       }
     }
-  }, defaultMapping);
+  };
 
-  var testIndexOptions = _.defaults(defaultMapping, {
+  var testIndexOptions = {
     index: testIndexName,
     options: testOptions
-   // ,trace: true // Trace only for dev
-  });
+    // ,trace: true // Trace only for dev
+  };
 
   // default Elasticsearch client
   var client = new elasticsearch.Client();

@@ -94,9 +94,10 @@ function createIndex(index, mappings) {
   if (!index) return Promise.reject(new MissingArgumentError('index'));
   if (!isConnected()) return Promise.reject(new ConnectionError(db.host));
 
+  var mergedMapping = _.defaultsDeep(mappings, defaultMappings);
   return db.client.indices.create({
     index: index,
-    body: mappings || defaultMappings
+    body: mergedMapping
   });
 }
 
