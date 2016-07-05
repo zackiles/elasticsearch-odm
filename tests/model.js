@@ -43,7 +43,7 @@ describe('Model', function () {
       var typeName = 'nameTestType';
       var NameTestModel = app.model(typeName);
 
-      var nameTest = new NameTestModel({name: 'test'});
+      var nameTest = new NameTestModel({name: 'test', test: 'another string'});
       nameTest.save()
         .then(function () {
           return helper.getMapping(app, typeName);
@@ -53,6 +53,28 @@ describe('Model', function () {
           mapping.properties.name.should.have.property('index', 'not_analyzed');
           mapping.properties.id.should.have.property('index', 'not_analyzed');
           mapping.properties.slug.should.have.property('index', 'not_analyzed');
+          mapping.properties.test.should.have.property('index', 'not_analyzed');
+          done();
+        })
+        .catch(done);
+    });
+
+    it('not_analyzed default mapping properties with Schema', function (done) {
+      var typeName = 'nameTestType2';
+      var nameTestSchema = new app.Schema({
+        name : String,
+        test2 : String
+      });
+      var NameTestModel = app.model(typeName,nameTestSchema);
+
+      var nameTest = new NameTestModel({name: 'test', test2: 'another string'});
+      nameTest.save()
+        .then(function () {
+          return helper.getMapping(app, typeName);
+        })
+        .then(function (mapping) {
+          mapping.should.have.property('properties');
+          mapping.properties.test2.should.have.property('index', 'not_analyzed');
           done();
         })
         .catch(done);
@@ -159,7 +181,7 @@ describe('Model', function () {
       done();
     });
 
-    it('setting options.type for scehma forces a customt type name', function (done) {
+    it('setting options.type for schema forces a custom type name', function (done) {
       var schema = new app.Schema({author: String}, {type: 'CustomType'});
       var SomeModel = app.model('SomeModel', schema);
       SomeModel.model.should.have.property('type', 'CustomType');

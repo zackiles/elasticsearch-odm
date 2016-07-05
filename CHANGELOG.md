@@ -1,3 +1,7 @@
+0.3.2 / 2016-07-05
+==================
+  * Add String/not_analyzed test
+
 0.3.1 / 2016-07-03
 ==================
   * Update dependencies
