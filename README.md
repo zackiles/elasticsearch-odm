@@ -2,7 +2,7 @@ Elasticsearch ODM
 =========
 
 [![Join the chat at https://gitter.im/bloublou2014/elasticsearch-odm](https://badges.gitter.im/bloublou2014/elasticsearch-odm.svg)](https://gitter.im/bloublou2014/elasticsearch-odm?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![npm version](https://badge.fury.io/js/elasticsearch-odm.svg)](http://badge.fury.io/js/elasticsearch-odm)
+[![npm version](https://badge.fury.io/js/bloublou2014/elasticsearch-odm.svg)](http://badge.fury.io/js/elasticsearch-odm)
 [![Build Status](https://travis-ci.org/bloublou2014/elasticsearch-odm.svg?branch=es-2.x)](https://travis-ci.org/bloublou2014/elasticsearch-odm)
 [![Dependency Status](https://david-dm.org/bloublou2014/elasticsearch-odm/es-2.x.svg)](https://david-dm.org/bloublou2014/elasticsearch-odm/es-2.x)
 [![Dev Dependency Status](https://david-dm.org/bloublou2014/elasticsearch-odm/es-2.x/dev-status.svg)](https://david-dm.org/bloublou2014/elasticsearch-odm/es-2.x#info=devDependencies)
@@ -17,7 +17,7 @@ This is currently the only ODM/ORM library that exists for Elasticsearch on Node
 If you currently have [npm elasticsearch](https://www.npmjs.com/package/elasticsearch) installed, you can remove it and access it from [client](client---elasticsearch) in this library if you still need it.
 
 ```sh
-$ npm install elasticsearch-odm
+$ npm install bloublou2014/elasticsearch-odm
 ```
 
 ### Features
