@@ -1,7 +1,7 @@
 {
-  "name": "elasticsearch-odm",
-  "version": "0.3.2",
-  "description": "Like Mongoose but for Elasticsearch. Define models, preform CRUD operations, and build advanced search queries.",
+  "name": "elasticsearch-odm-2",
+  "version": "0.3.3",
+  "description": "Like Mongoose but for Elasticsearch 2.x. Define models, preform CRUD operations, and build advanced search queries.",
   "main": "index.js",
   "scripts": {
     "test": "./node_modules/.bin/mocha --check-leaks ./tests/**.js"
