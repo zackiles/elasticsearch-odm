@@ -17,7 +17,7 @@ This is currently the only ODM/ORM library that exists for Elasticsearch on Node
 If you currently have [npm elasticsearch](https://www.npmjs.com/package/elasticsearch) installed, you can remove it and access it from [client](client---elasticsearch) in this library if you still need it.
 
 ```sh
-$ npm install bloublou2014/elasticsearch-odm
+$ npm install elasticsearch-odm-2
 ```
 
 ### Features
@@ -34,7 +34,7 @@ You'll find the API is intuitive if you've used Mongoose or Waterline.
 Example (no schema):
 
 ```js
-var esodm = require('elasticsearch-odm');
+var esodm = require('elasticsearch-odm-2');
 var Car = esodm.model('Car');
 var car = new Car({
   type: 'Ford', color: 'Black'
@@ -49,7 +49,7 @@ esodm.connect('my-index').then(function(){
 Example (using a [schema](#schemas)):
 
 ```js
-var esodm = require('elasticsearch-odm');
+var esodm = require('elasticsearch-odm-2');
 var carSchema = new esodm.Schema({
   type: String,
   color: {type: String, required: true}
@@ -115,7 +115,7 @@ Example:
 
 ```js
 // when bootstrapping your application
-var esodm = require('elasticsearch-odm');
+var esodm = require('elasticsearch-odm-2');
 
 esodm.connect({
   host: 'localhost:9200',
@@ -148,7 +148,7 @@ Example:
 
 ```js
 // when bootstrapping your application
-var esodm = require('elasticsearch-odm');
+var esodm = require('elasticsearch-odm-2');
 
 esodm.connect('my-index')
   .then(function(){
@@ -189,7 +189,7 @@ Note : In order to access document just after insertion you must add `{refresh: 
 
 Example :
 ```js
-var esodm = require('elasticsearch-odm');
+var esodm = require('elasticsearch-odm-2');
 var Car = esodm.model('Car');
 var car = new Car({
   type: 'Ford', color: 'Black'
