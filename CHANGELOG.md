@@ -1,3 +1,7 @@
+1.0.0 / 2016-08-13
+===================
+  * Changed default Number type in schema to be elasticsearch long instead of integer to match elasticsearch defaults for dynamic mapping (JSON integers are long by default)
+
 0.3.1 / 2016-08-12
 ===================
   * Fixed an issue relating to constant_score queries.
