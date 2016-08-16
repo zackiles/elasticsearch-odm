@@ -93,6 +93,7 @@ var Car = elasticsearch.model('Car', carSchema);
 - [Schemas](#schemas)
   - [`Hooks and Middleware`](#hooks-and-middleware)
   - [`Static and Instance Methods`](#static-and-instance-methods)
+  - [`Sync Mapping`](#sync-mapping)
 
 ### Core
 Core methods can be called directly on the Elasticsearch ODM instance. These include methods to configure, connect, and get information from your Elasticsearch database. Most methods act upon the [official Elasticsearch client](https://www.npmjs.com/package/elasticsearch).
@@ -115,6 +116,7 @@ elasticsearch.connect({
   host: 'localhost:9200',
   index: 'my-index',
   logging: false, // true by default when NODE_ENV=development
+  syncMapping: false // see 'sync mapping' in Schemas documentation
   ssl: {
     ca: fs.readFileSync('./cacert.pem'),
     rejectUnauthorized: true
@@ -505,6 +507,19 @@ schema.methods.getFullName = function(){
 // Static method.
 schema.statics.findByColor = function(color){
   return this.find({color: color});
+});
+```
+
+#### Sync Mapping
+By default, an attempt will be made on connection to convert your schema definitions into Elasticsearch mappings, and send a [PUT mapping](https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-put-mapping.html) request to sync them. This can cause major issues if your schemas mappings have [conflicting types](https://www.elastic.co/guide/en/elasticsearch/reference/2.0/breaking_20_mapping_changes.html).
+
+If you'd like to disable sync mapping, or if your node has mappings already configured, you can do it like so.
+
+```js
+elasticsearch.connect({
+  host: 'localhost:9200',
+  index: 'my-index',
+  syncMapping: false
 });
 ```
 

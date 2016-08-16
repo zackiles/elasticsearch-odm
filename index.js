@@ -27,8 +27,9 @@ var db = {
 var CONNECTED = false;
 
 var mappingQueue = [];
+var syncMapping = true;
 var handleMappingQueue = function(){
-  if(!mappingQueue.length) return Promise.resolve();
+  if(!mappingQueue.length || syncMapping == false) return Promise.resolve();
   return Promise.map(mappingQueue , function(v){
     return db.client.indices.putMapping({
       index: db.index,
@@ -47,6 +48,10 @@ function connect(options){
     db.index = options;
   }else if(_.isObject(options)){
     if(!options.index) return Promise.reject(new MissingArgumentError('options.index'));
+    if(options.hasOwnProperty('syncMapping')){
+      syncMapping = options.syncMapping;
+      delete options.syncMapping;
+    }
     db = _.assign(db, options);
   }else{
     return Promise.reject(new MissingArgumentError('options'));
@@ -57,7 +62,7 @@ function connect(options){
   return db.client.indices.exists({index: db.index}).then(function(result){
     //No error - connected
     CONNECTED = true;
-    
+
     if(result){
       return handleMappingQueue();
     }else{
@@ -147,17 +152,10 @@ function model(modelName, schema){
     // Update the mapping asynchronously.
     var mapping = {};
     mapping[modelInstance.model.type] = schema.toMapping();
-
-    // If we're not currently connected, push the mapping update call to the queue.'
+    mappingQueue.push({type: modelInstance.model.type, mapping: mapping});
+    // If we're already connected process the mapping queue.
     if(isConnected()){
-      db.client.indices.putMapping({
-        index: db.index,
-        type: modelInstance.model.type,
-        ignore_conflicts: true,
-        body:mapping
-      });
-    }else{
-      mappingQueue.push({type: modelInstance.model.type, mapping: mapping});
+      handleMappingQueue();
     }
   }
 

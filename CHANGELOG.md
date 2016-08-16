@@ -1,3 +1,7 @@
+1.1.0 / 2016-08-21
+===================
+  * Add connect option 'syncMapping' to enabled/disable automatic shcema->elasticsearch put mappings. syncMapping is true by default.
+
 1.0.0 / 2016-08-13
 ===================
   * Changed default Number type in schema to be elasticsearch long instead of integer to match elasticsearch defaults for dynamic mapping (JSON integers are long by default)
