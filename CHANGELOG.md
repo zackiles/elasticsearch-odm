@@ -1,3 +1,8 @@
+0.3.6 / 2016-11-27
+==================
+  * Update api version to 5.0
+  * Update Elasticsearch lib
+  
 0.3.2 / 2016-07-05
 ==================
   * Add String/not_analyzed test

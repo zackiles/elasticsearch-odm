@@ -21,7 +21,8 @@ var db = {
   index: '',
   logging: process.env.NODE_ENV === 'development',
   client: {},
-  models: {}
+  models: {},
+  trace: true
 };
 
 var CONNECTED = false;
