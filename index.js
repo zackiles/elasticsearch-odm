@@ -22,7 +22,7 @@ let db = {
   logging: process.env.NODE_ENV === 'development',
   client: {},
   models: {},
-  trace: true
+  trace: false
 };
 
 let CONNECTED = false;

@@ -88,48 +88,50 @@ describe('Query', function () {
     it('Missing Filter query', function () {
       let req = Query.parseRequest(index, type, null, {missing: 'name'});
       req.body.should.have.property('query')
-        .and.have.property('constant_score')
-        .and.have.property('filter')
-        .and.have.property('and')
+
+        .and.have.property('bool')
+        .and.have.property('must_not')
         .and.be.instanceof(Array);
-      req.body.query.constant_score.filter.and[0].should.have.property('missing')
+
+      req.body.query.bool.must_not[0].should.have.property('exists')
         .and.have.property('field', 'name');
     });
 
     it('Missing Filter query array', function () {
       let req = Query.parseRequest(index, type, null, {missing: ['name', 'color']});
+
       req.body.should.have.property('query')
-        .and.have.property('constant_score')
-        .and.have.property('filter')
-        .and.have.property('and')
+        .and.have.property('bool')
+        .and.have.property('must_not')
         .and.be.instanceof(Array);
-      req.body.query.constant_score.filter.and[0].should.have.property('missing')
+
+      req.body.query.bool.must_not[0].should.have.property('exists')
         .and.have.property('field', 'name');
-      req.body.query.constant_score.filter.and[1].should.have.property('missing')
+      req.body.query.bool.must_not[1].should.have.property('exists')
         .and.have.property('field', 'color');
     });
 
     it('Exists Filter query', function () {
       let req = Query.parseRequest(index, type, null, {exists: 'name'});
       req.body.should.have.property('query')
-        .and.have.property('constant_score')
-        .and.have.property('filter')
-        .and.have.property('and')
+        .and.have.property('bool')
+        .and.have.property('must')
         .and.be.instanceof(Array);
-      req.body.query.constant_score.filter.and[0].should.have.property('exists')
+
+      req.body.query.bool.must[0].should.have.property('exists')
         .and.have.property('field', 'name');
     });
 
     it('Exists Filter query array', function () {
       let req = Query.parseRequest(index, type, null, {exists: ['name', 'color']});
       req.body.should.have.property('query')
-        .and.have.property('constant_score')
-        .and.have.property('filter')
-        .and.have.property('and')
+        .and.have.property('bool')
+        .and.have.property('must')
         .and.be.instanceof(Array);
-      req.body.query.constant_score.filter.and[0].should.have.property('exists')
+
+      req.body.query.bool.must[0].should.have.property('exists')
         .and.have.property('field', 'name');
-      req.body.query.constant_score.filter.and[1].should.have.property('exists')
+      req.body.query.bool.must[1].should.have.property('exists')
         .and.have.property('field', 'color');
     });
 
