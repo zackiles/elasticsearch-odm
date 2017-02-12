@@ -1,13 +1,13 @@
 'use-strict';
 
-var requireNew = require('require-new'),
+let requireNew = require('require-new'),
   app = requireNew('../index.js'),
   should = require('should'),
   Promise = require('bluebird'),
   _ = require('lodash'),
   helper = require('./helper');
 
-var getUnique = function () {
+let getUnique = function () {
   return _.uniqueId(Date.now().toString());
 };
 
@@ -34,12 +34,12 @@ describe('Model-Consistency', function () {
 
   describe('model.remove()', function () {
     it('it removes documents consistently (create, save, remove)', function (done) {
-      var promises = [];
+      let promises = [];
 
-      var makePromise = function () {
+      let makePromise = function () {
         return new Promise(function (success, error) {
-          var Model = app.model(getUnique());
-          var instance;
+          let Model = app.model(getUnique());
+          let instance;
           new Model({name: getUnique()})
             .save()
             .then(function (results) {
@@ -63,7 +63,7 @@ describe('Model-Consistency', function () {
         });
       };
 
-      for (var i = 0; i < 50; i++) {
+      for (let i = 0; i < 50; i++) {
         promises.push(makePromise());
       }
 
@@ -78,13 +78,13 @@ describe('Model-Consistency', function () {
 
   describe('model.update()', function () {
     it('it updates documents consistently (create, save, update)', function (done) {
-      var promises = [];
+      let promises = [];
 
-      var makePromise = function () {
+      let makePromise = function () {
         return new Promise(function (success, error) {
-          var first;
-          var newName = getUnique();
-          var Model = app.model(getUnique());
+          let first;
+          let newName = getUnique();
+          let Model = app.model(getUnique());
           // create an object for this unique model
           new Model({name: getUnique()})
             .save()
@@ -110,7 +110,7 @@ describe('Model-Consistency', function () {
         });
       };
 
-      for (var i = 0; i < 50; i++) {
+      for (let i = 0; i < 50; i++) {
         promises.push(makePromise());
       }
 

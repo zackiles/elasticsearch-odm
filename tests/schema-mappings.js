@@ -1,13 +1,13 @@
 'use-strict';
 
-var Schema = require('../lib/schema.js'),
+let Schema = require('../lib/schema.js'),
   _ = require('lodash'),
   should = require('should');
 
 describe('Schema-Mappings', function () {
 
   it('returns an Elasticsearch properties mapping', function () {
-    var schema = new Schema({
+    let schema = new Schema({
       name: String,
       company: {
         location: {type: String, required: true}
@@ -19,7 +19,7 @@ describe('Schema-Mappings', function () {
         }
       }]
     });
-    var mapping = schema.toMapping();
+    let mapping = schema.toMapping();
     mapping.should.have.property('properties')
       .and.have.property('name')
       .and.have.property('type', 'string');

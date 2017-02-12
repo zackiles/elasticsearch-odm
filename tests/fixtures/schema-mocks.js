@@ -7,7 +7,7 @@ module.exports = {
 };
 
 function nestedSingleLevel(){
-  var schema = {
+  let schema = {
     name: String,
     createdOn: Date,
     nestedDocumentOne: {},

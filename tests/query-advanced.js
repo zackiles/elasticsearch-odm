@@ -1,12 +1,12 @@
 'use-strict';
 
-var requireNew = require('require-new'),
+let requireNew = require('require-new'),
   app = requireNew('../index'),
   _ = require('lodash'),
   should = require('should'),
   helper = require('./helper');
 
-var Model = app.model('Jump');
+let Model = app.model('Jump');
 
 describe('Query-Advanced', function () {
   // some of the calls use refresh, it is slow.
@@ -31,7 +31,7 @@ describe('Query-Advanced', function () {
   });
 
   describe('Filters', function () {
-    var self = this;
+    let self = this;
     
     before(function (done) {
       Model.create({

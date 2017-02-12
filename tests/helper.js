@@ -1,21 +1,21 @@
 /**
  * Index helper
  */
-var Promise = require('bluebird'),
+let Promise = require('bluebird'),
   _ = require('lodash'),
   should = require('should'),
   elasticsearch = require('elasticsearch');
 
-var helper = function () {
-  var module = {};
+let helper = function () {
+  let module = {};
 
   // avoid test collision by using a different index name
   // in case a test fails, next test will not use same index
-  var testIndex = 0;
+  let testIndex = 0;
 
-  var testIndexName = 'eodm-test';
+  let testIndexName = 'eodm-test';
 
-  var testOptions = {
+  let testOptions = {
     // fastest index creation for elasticsearch
     settings: {
       index: {
@@ -25,16 +25,16 @@ var helper = function () {
     }
   };
 
-  var testIndexOptions = {
+  let testIndexOptions = {
     index: testIndexName,
     options: testOptions
     // ,trace: true // Trace only for dev
   };
 
   // default Elasticsearch client
-  var client = new elasticsearch.Client();
+  let client = new elasticsearch.Client();
 
-  var latestIndex;
+  let latestIndex;
 
   module.generateIndexName = function () {
     latestIndex = testIndexName + '_' + (testIndex++);
@@ -42,7 +42,7 @@ var helper = function () {
   };
 
   module.getOptions = function (shards) {
-    var tmp = _.cloneDeep(testIndexOptions);
+    let tmp = _.cloneDeep(testIndexOptions);
     tmp.index = module.generateIndexName();
     if (shards) {
       // for test purpose
@@ -72,7 +72,8 @@ var helper = function () {
   };
 
   module.connect = function (app, shards) {
-    var options = module.getOptions(shards);
+    let options = module.getOptions(shards);
+    console.log(JSON.stringify(options));
 
     return new Promise(function (success, error) {
       client.indices.delete({
@@ -102,7 +103,7 @@ var helper = function () {
 
   module.getMapping = function (app, typeName) {
     return new Promise(function (success, error) {
-      var esType = typeName.toLowerCase() + 's';
+      let esType = typeName.toLowerCase() + 's';
       app.client.indices.getMapping({
           index: latestIndex,
           type: esType
@@ -153,7 +154,10 @@ var helper = function () {
     return new Promise(function (success, error) {
       app.client.indices.refresh({
           index: latestIndex,
-          force: true
+          // ES 5.x : seems not existing  even if on doc
+          // https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/current/api-reference.html#api-indices-refresh
+          // vs https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-refresh.html
+          // force: true
         },
         function (err, response, status) {
           if (err) {
@@ -167,7 +171,7 @@ var helper = function () {
 
   module.deleteIndex = function (indexName) {
     return new Promise(function (success, error) {
-      var client = new elasticsearch.Client();
+      let client = new elasticsearch.Client();
       client.indices.delete({
           index: indexName || latestIndex
         },

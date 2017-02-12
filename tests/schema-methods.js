@@ -1,11 +1,11 @@
 'use-strict';
 
-var requireNew = require('require-new'),
+let requireNew = require('require-new'),
   app = requireNew('../index.js'),
   _ = require('lodash'),
   should = require('should');
 
-var schema = new app.Schema({
+let schema = new app.Schema({
   name: String
 });
 
@@ -16,9 +16,9 @@ schema.statics.staticMethod = function () {
   return this;
 };
 
-var Model = app.model('SchemaMethods', schema);
-var nameValue = Date.now().toString();
-var model = new Model({name: nameValue});
+let Model = app.model('SchemaMethods', schema);
+let nameValue = Date.now().toString();
+let model = new Model({name: nameValue});
 
 describe('Schema-Methods', function () {
 

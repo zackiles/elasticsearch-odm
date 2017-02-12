@@ -1,14 +1,14 @@
 'use-strict';
 
-var requireNew = require('require-new'),
+let requireNew = require('require-new'),
   app = requireNew('../index'),
   _ = require('lodash'),
   Promise = require('bluebird'),
   should = require('should'),
   helper = require('./helper');
 
-var Car = app.model('Car');
-var car;
+let Car = app.model('Car');
+let car;
 
 describe('Query-Promise', function () {
 

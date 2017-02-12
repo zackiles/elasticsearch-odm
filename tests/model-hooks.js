@@ -1,11 +1,11 @@
 'use-strict';
 
-var requireNew = require('require-new'),
+let requireNew = require('require-new'),
   app = requireNew('../index.js'),
   should = require('should'),
   helper = require('./helper');
 
-var schema,
+let schema,
   Model,
   model;
 

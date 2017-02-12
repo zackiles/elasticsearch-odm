@@ -1,19 +1,19 @@
 'use-strict';
 
-var Schema = require('../lib/schema.js'),
+let Schema = require('../lib/schema.js'),
   _ = require('lodash'),
   should = require('should');
 
 describe('Schema-Hooks', function () {
-  var schema = new Schema();
-  var context = {name: 'value'};
+  let schema = new Schema();
+  let context = {name: 'value'};
 
   it('Kareem is working', function (done) {
-    var Kareem = require('kareem');
-    var hooks = new Kareem();
+    let Kareem = require('kareem');
+    let hooks = new Kareem();
 
-    var count1 = 0;
-    var count2 = 0;
+    let count1 = 0;
+    let count2 = 0;
 
     hooks.pre('cook', function (cb) {
       ++count1;
@@ -33,7 +33,7 @@ describe('Schema-Hooks', function () {
   });
 
   it('adds and executes pre hooks', function (done) {
-    var count = 0;
+    let count = 0;
     schema.pre('save', function (cb) {
       ++count;
       should(this.name).and.equal(context.name);
@@ -52,7 +52,7 @@ describe('Schema-Hooks', function () {
   });
 
   it('adds and executes post hooks', function (done) {
-    var count = 0;
+    let count = 0;
     schema.post('save', function (ctx, cb) {
       count += 1;
       should(ctx.name).and.equal(context.name);
@@ -86,7 +86,7 @@ describe('Schema-Hooks', function () {
   });
 
   it('hook instances are distinct between schemas', function (done) {
-    var schema1 = new Schema();
+    let schema1 = new Schema();
 
     schema.pre('save', function () {
       throw new Error('An older insace hook was executed.');

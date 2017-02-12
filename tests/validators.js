@@ -1,13 +1,13 @@
 'use-strict';
 
-var utils = require('../lib/utils'),
+let utils = require('../lib/utils'),
     should = require('should');
 
 
 describe('Validators', function(){
 
   describe('.isISO8601()', function(){
-    var isoDate = new Date().toISOString();
+    let isoDate = new Date().toISOString();
     it('valid', function(){
       utils.isISO8601(isoDate).should.equal(true);
     });
@@ -30,7 +30,7 @@ describe('Validators', function(){
   });
 
   describe('.isLong()', function(){
-    var long = 9223372036854775808;
+    let long = 9223372036854775808;
     it('valid', function(){
       utils.isLong(long).should.equal(true);
     });
@@ -41,7 +41,7 @@ describe('Validators', function(){
   });
 
   describe('.isShort()', function(){
-    var short = -32768;
+    let short = -32768;
     it('valid', function(){
       utils.isShort(short).should.equal(true);
     });
@@ -51,7 +51,7 @@ describe('Validators', function(){
   });
 
   describe('.isByte()', function(){
-    var byte = 127;
+    let byte = 127;
     it('valid', function(){
       utils.isByte(byte).should.equal(true);
     });
@@ -61,7 +61,7 @@ describe('Validators', function(){
   });
 
   describe('.isBase64()', function(){
-    var base64 = 'aGhlbGxv';
+    let base64 = 'aGhlbGxv';
     it('valid', function(){
       utils.isBase64(base64).should.equal(true);
     });

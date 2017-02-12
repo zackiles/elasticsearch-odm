@@ -1,15 +1,16 @@
 'use-strict';
 
-var requireNew = require('require-new'),
+const requireNew = require('require-new'),
   should = require('should'),
   helper = require('./helper');
 
 describe('Connection', function () {
+  this.timeout(5000);
 
   describe('connect and disconnect properly', function () {
 
     it('connect', function (done) {
-      var app = requireNew('../index');
+      let app = requireNew('../index');
       should.equal(app.isConnected(), false);
       helper.connect(app)
         .then(function () {
@@ -18,34 +19,40 @@ describe('Connection', function () {
         .then(function () {
           return helper.remove(app);
         })
-        .then(function(){
+        .then(function () {
           done();
         })
         .catch(done);
     });
 
     it('connect with custom settings', function (done) {
-      var app = requireNew('../index');
+      let app = requireNew('../index');
       should.equal(app.isConnected(), false);
-      helper.connect(app, 10)
+      helper.connect(app, 1)
         .then(function () {
+          should.equal(app.isConnected(), true);
+        })
+        .then(function () {
+          console.log("require settings");
           return helper.getSettings(app);
         })
         .then(function (settings) {
-          should.equal(settings['index.number_of_shards'], 10);
+          console.log("check shards");
+          should.equal(settings['index.number_of_shards'], 1);
         })
         .then(function () {
+          console.log("remove");
           return helper.remove(app);
         })
-        .then(function(){
+        .then(function () {
           done();
         })
         .catch(done);
     });
 
     it('disconnect', function (done) {
-      var app = requireNew('../index');
-      var indexName;
+      let app = requireNew('../index');
+      let indexName;
       should.equal(app.isConnected(), false);
       helper.connect(app)
         .then(function () {

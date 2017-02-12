@@ -13,9 +13,7 @@ env: TARGET=test
 
 node_js:
   - 'node'
-  - '6'
-  - '5'
-  - '4'
+  - '7'
 
 #before_install:
   # nothing to do
@@ -29,7 +27,7 @@ before_script:
   # add a small delay to your build script:
   # - sleep 10
   # or 2. install specific version of elasticsearch
-  - curl -O https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/2.3.3/elasticsearch-2.3.3.deb && sudo dpkg -i --force-confnew elasticsearch-2.3.3.deb && sudo service elasticsearch restart
+  - curl -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.2.0.deb && sudo dpkg -i --force-confnew elasticsearch-5.2.0.deb && sudo service elasticsearch restart
   - echo "Waiting 10sec that elaticsearch starts"
   - sleep 10
   - echo "check elasticsearch availability"

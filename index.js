@@ -1,6 +1,6 @@
 'use strict';
 
-var logger = require('./lib/logger'),
+let logger = require('./lib/logger'),
   Client = require('./lib/client'),
   Schema = require('./lib/schema'),
   errors = require('./lib/errors'),
@@ -16,7 +16,7 @@ var logger = require('./lib/logger'),
 
 logger.transports.console.silent = (process.env.NODE_ENV !== 'development');
 
-var db = {
+let db = {
   host: 'localhost:9200',
   index: '',
   logging: process.env.NODE_ENV === 'development',
@@ -25,10 +25,10 @@ var db = {
   trace: true
 };
 
-var CONNECTED = false;
+let CONNECTED = false;
 
-var mappingQueue = [];
-var handleMappingQueue = function () {
+let mappingQueue = [];
+let handleMappingQueue = function () {
   if (!mappingQueue.length) return Promise.resolve();
   return Promise.map(mappingQueue, function (v) {
     return db.client.indices.putMapping({
@@ -86,7 +86,7 @@ function isConnected() {
 function status(type) {
   if (!isConnected()) return Promise.reject(new ConnectionError(db.host));
 
-  var args = {index: db.index};
+  let args = {index: db.index};
   if (type) args.type = type;
   return db.client.indices.status(args);
 }
@@ -95,7 +95,7 @@ function createIndex(index, mappings) {
   if (!index) return Promise.reject(new MissingArgumentError('index'));
   if (!isConnected()) return Promise.reject(new ConnectionError(db.host));
 
-  var mergedMapping = _.defaultsDeep(mappings, defaultMappings);
+  let mergedMapping = _.defaultsDeep(mappings, defaultMappings);
   return db.client.indices.create({
     index: index,
     body: mergedMapping
@@ -127,7 +127,7 @@ function model(modelName, schema) {
 
   // create a neweable function object.
   function modelInstance(data) {
-    var self = this;
+    let self = this;
     // Add any user supplied schema instance methods.
     if (schema) {
       _.assign(self, schema.methods);
@@ -157,7 +157,7 @@ function model(modelName, schema) {
     if (schema.options.type) modelInstance.model.type = schema.options.type;
 
     // Update the mapping asynchronously.
-    var mapping = {};
+    let mapping = {};
     mapping[modelInstance.model.type] = schema.toMapping();
 
     // If we're not currently connected, push the mapping update call to the queue.'

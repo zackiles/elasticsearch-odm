@@ -1,11 +1,11 @@
 'use-strict';
 
-var requireNew = require('require-new'),
+let requireNew = require('require-new'),
   app = requireNew('../index'),
   should = require('should'),
   helper = require('./helper');
 
-var Book = app.model('Book');
+let Book = app.model('Book');
 
 describe('Default Methods', function () {
 
@@ -29,7 +29,7 @@ describe('Default Methods', function () {
 
   describe('.count()', function () {
     it('counts all documents', function (done) {
-      var book = new Book({color: 'Red'});
+      let book = new Book({color: 'Red'});
       book.save()
         .then(function () {
           return Book.count();
@@ -59,7 +59,7 @@ describe('Default Methods', function () {
 
   describe('.find()', function () {
     this.timeout(10000);
-    var book;
+    let book;
 
 
     before(function (done) {
@@ -120,7 +120,7 @@ describe('Default Methods', function () {
 
   describe('.findAndRemove()', function () {
     it('finds a document by query and remove it', function (done) {
-      var book = new Book({name: 'Gulliver\'s Travels'});
+      let book = new Book({name: 'Gulliver\'s Travels'});
       book.save()
         .then(function (doc) {
           return Book.findAndRemove({name: doc.name});
@@ -134,7 +134,7 @@ describe('Default Methods', function () {
   describe('.findById()', function () {
 
     it('finds a document by id', function (done) {
-      var book = new Book({color: 'Red'});
+      let book = new Book({color: 'Red'});
       book.save()
         .then(function (doc) {
           return Book.findById(doc.id);
@@ -164,8 +164,8 @@ describe('Default Methods', function () {
   describe('.findByIds()', function () {
     it('finds documents by ids', function (done) {
       this.timeout(5000);
-      var book = new Book({name: 'Gulliver\'s Travels'});
-      var book2 = new Book({name: 'The Scarlet Letter'});
+      let book = new Book({name: 'Gulliver\'s Travels'});
+      let book2 = new Book({name: 'The Scarlet Letter'});
       book.save({refresh: true})
         .then(function (doc) {
           return book2.save({refresh: true});

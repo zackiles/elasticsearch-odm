@@ -34,9 +34,9 @@ You'll find the API is intuitive if you've used Mongoose or Waterline.
 Example (no schema):
 
 ```js
-var esodm = require('elasticsearch-odm-2');
-var Car = esodm.model('Car');
-var car = new Car({
+let esodm = require('elasticsearch-odm-2');
+let Car = esodm.model('Car');
+let car = new Car({
   type: 'Ford', color: 'Black'
 });
 esodm.connect('my-index').then(function(){
@@ -49,12 +49,12 @@ esodm.connect('my-index').then(function(){
 Example (using a [schema](#schemas)):
 
 ```js
-var esodm = require('elasticsearch-odm-2');
-var carSchema = new esodm.Schema({
+let esodm = require('elasticsearch-odm-2');
+let carSchema = new esodm.Schema({
   type: String,
   color: {type: String, required: true}
 });
-var Car = esodm.model('Car', carSchema);
+let Car = esodm.model('Car', carSchema);
 ```
 ## API Reference
 - [Core](#core)
@@ -115,7 +115,7 @@ Example:
 
 ```js
 // when bootstrapping your application
-var esodm = require('elasticsearch-odm-2');
+let esodm = require('elasticsearch-odm-2');
 
 esodm.connect({
   host: 'localhost:9200',
@@ -148,7 +148,7 @@ Example:
 
 ```js
 // when bootstrapping your application
-var esodm = require('elasticsearch-odm-2');
+let esodm = require('elasticsearch-odm-2');
 
 esodm.connect('my-index')
   .then(function(){
@@ -189,9 +189,9 @@ Note : In order to access document just after insertion you must add `{refresh: 
 
 Example :
 ```js
-var esodm = require('elasticsearch-odm-2');
-var Car = esodm.model('Car');
-var car = new Car({
+let esodm = require('elasticsearch-odm-2');
+let Car = esodm.model('Car');
+let car = new Car({
   type: 'Ford', color: 'Black'
 });
 esodm.connect('my-index').then(function(){
@@ -262,7 +262,7 @@ returns => Found documents, or null if nothing was found.
 Example:
 
 ```js
-var Car = esodm.model('Car');
+let Car = esodm.model('Car');
 
 // Simple query.
 Car.find({color: 'blue'}).then(function(results){
@@ -487,7 +487,7 @@ Example:
 // mappings will automatically be updated.
 
 // Note the various ways you can define a schema field type.
-var carSchema = new esodm.Schema({
+let carSchema = new esodm.Schema({
   // native type without options
   available: Boolean,
   // Elasticsearch type without options
@@ -529,7 +529,7 @@ Schemas include pre and post hooks that function similar to Mongoose. Currently,
 Same conventions as Mongoose. Function takes a done() callback that must be called when your function is finished. `this` is scoped to the current document. assing an Error to done() will cancel the current operation. For example, in a pre 'save' hook, passing an error to done() will cause the document not to be saved and will return your error to the save() callers rejection handler.
 
 ```js
-var schema = new esodm.Schema(...);
+let schema = new esodm.Schema(...);
 schema.pre('save', function(done){
   console.log(this); // this = the current document
   done(); // OR done(new Error('bad document'));
@@ -541,7 +541,7 @@ schema.pre('save', function(done){
 Same conventions as Mongoose. Does not have a done() callback. Executed after the hooked method. The first argument is the current document which may or may not be a document instance (eg. post remove only receives the raw object as the document no longer exists).
 
 ```js
-var schema = new esodm.Schema(...);
+let schema = new esodm.Schema(...);
 schema.post('remove', function(document){
   console.log(document);
 });
@@ -553,7 +553,7 @@ Add methods to your schema with the same convention as Mongoose.
 
 ```js
 // Instance method.
-var schema = new esodm.Schema(...);
+let schema = new esodm.Schema(...);
 
 schema.methods.getFullName = function(){
   return this.firstName + ' ' + this.lastName;
