@@ -73,7 +73,7 @@ let helper = function () {
 
   module.connect = function (app, shards) {
     let options = module.getOptions(shards);
-    console.log(JSON.stringify(options));
+   // console.log(JSON.stringify(options));
 
     return new Promise(function (success, error) {
       client.indices.delete({

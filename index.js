@@ -34,7 +34,8 @@ let handleMappingQueue = function () {
     return db.client.indices.putMapping({
       index: db.index,
       type: v.type,
-      ignore_conflicts: true,
+      // ES 5.x : obsolete : https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-put-mapping.html
+      // ignore_conflicts: true,
       body: v.mapping
     });
   });
@@ -168,7 +169,8 @@ function model(modelName, schema) {
       db.client.indices.putMapping({
         index: db.index,
         type: modelInstance.model.type,
-        ignore_conflicts: true,
+        // ES 5.x : obsolete : https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-put-mapping.html
+        // ignore_conflicts: true,
         body: mapping
       });
       //TODO : setup promise or sync call to putMapping to avoid an error if an insertion comes just after
