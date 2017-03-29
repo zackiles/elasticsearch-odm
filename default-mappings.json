@@ -13,9 +13,6 @@
    },
   "mappings": {
     "_default_": {
-      "_id": {
-        "path": "id"
-      },
       "_all" : {
         "enabled" : true
       },
