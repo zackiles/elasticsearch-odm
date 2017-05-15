@@ -1,117 +1,129 @@
 'use strict';
 
-var logger = require('./lib/logger'),
-    Client = require('./lib/client'),
-    Schema = require('./lib/schema'),
-    errors = require('./lib/errors'),
-    pluralize = require('pluralize'),
-    utils = require('./lib/utils'),
-    MissingArgumentError = errors.MissingArgumentError,
-    ConnectionError = errors.ConnectionError,
-    Model = require('./lib/model'),
-    defaultMethods = require('./lib/default-methods'),
-    defaultMappings = require('./default-mappings'),
-    _ = require('lodash'),
-    Promise = require('bluebird');
+let logger = require('./lib/logger'),
+  Client = require('./lib/client'),
+  Schema = require('./lib/schema'),
+  errors = require('./lib/errors'),
+  pluralize = require('pluralize'),
+  utils = require('./lib/utils'),
+  MissingArgumentError = errors.MissingArgumentError,
+  ConnectionError = errors.ConnectionError,
+  Model = require('./lib/model'),
+  defaultMethods = require('./lib/default-methods'),
+  defaultMappings = require('./default-mappings'),
+  _ = require('lodash'),
+  Promise = require('bluebird');
 
 logger.transports.console.silent = (process.env.NODE_ENV !== 'development');
 
-var db = {
+let db = {
   host: 'localhost:9200',
   index: '',
   logging: process.env.NODE_ENV === 'development',
   client: {},
-  models: {}
+  models: {},
+  trace: false
 };
 
-var CONNECTED = false;
+let CONNECTED = false;
 
-var mappingQueue = [];
-var syncMapping = true;
-var handleMappingQueue = function(){
-  if(!mappingQueue.length || syncMapping == false) return Promise.resolve();
-  return Promise.map(mappingQueue , function(v){
+let mappingQueue = [];
+let syncMapping = true;
+let handleMappingQueue = function () {
+  if (!mappingQueue.length || syncMapping == false) return Promise.resolve();
+  return Promise.map(mappingQueue, function(v){
     return db.client.indices.putMapping({
       index: db.index,
       type: v.type,
-      ignore_conflicts: true,
-      body:v.mapping
+      // ES 5.x : obsolete : https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-put-mapping.html
+      // ignore_conflicts: true,
+      body: v.mapping
     });
   });
 };
 
-function connect(options){
-  if(isConnected()) return Promise.resolve();
+function connect(options) {
+  if (isConnected()) return Promise.resolve();
 
   // can pass just the index name, or a client configuration object.
-  if(_.isString(options)){
+  if (_.isString(options)) {
     db.index = options;
-  }else if(_.isObject(options)){
-    if(!options.index) return Promise.reject(new MissingArgumentError('options.index'));
-    if(options.hasOwnProperty('syncMapping')){
+  } else if(_.isObject(options)){
+    if (!options.index) return Promise.reject(new MissingArgumentError('options.index'));
+    if(options.hasOwnProperty('syncMapping')) {
       syncMapping = options.syncMapping;
       delete options.syncMapping;
     }
     db = _.assign(db, options);
-  }else{
+  } else {
     return Promise.reject(new MissingArgumentError('options'));
   }
 
   module.exports.client = db.client = Client.makeClient(db);
 
-  return db.client.indices.exists({index: db.index}).then(function(result){
+  return db.client.indices.exists({index: db.index}).then(function (result) {
     //No error - connected
     CONNECTED = true;
 
-    if(result){
+    if (result) {
       return handleMappingQueue();
-    }else{
+    } else {
       // if the index doesn't exist, then create it.
-      return createIndex(db.index).then(handleMappingQueue);
+      return createIndex(db.index, db.options).then(handleMappingQueue);
     }
   })
-  .then(function(results){
-    return Promise.resolve();
-  });
+    .then(function (results) {
+      return Promise.resolve();
+    });
 }
 
-function isConnected(){
+function disconnect() {
+  if (!isConnected()) return Promise.resolve();
+
+  db.client.close();
+  CONNECTED = false;
+  return Promise.resolve();
+}
+
+function isConnected() {
   return CONNECTED;
 }
 
-function status(type){
-  if(!isConnected()) return Promise.reject(new ConnectionError(db.host));
+function status(type) {
+  if (!isConnected()) return Promise.reject(new ConnectionError(db.host));
 
-  var args = {index: db.index};
-  if(type) args.type = type;
+  let args = {index: db.index};
+  if (type) args.type = type;
   return db.client.indices.status(args);
 }
 
-function createIndex(index, mappings){
-  if(!index) return Promise.reject(new MissingArgumentError('index'));
-  if(!isConnected()) return Promise.reject(new ConnectionError(db.host));
+function createIndex(index, mappings) {
+  if (!index) return Promise.reject(new MissingArgumentError('index'));
+  if (!isConnected()) return Promise.reject(new ConnectionError(db.host));
 
+  let mergedMapping = _.defaultsDeep(mappings, defaultMappings);
   return db.client.indices.create({
     index: index,
-    body: mappings || defaultMappings
+    body: mergedMapping
   });
 }
 
-function removeIndex(index){
-  if(!index) return Promise.reject(new MissingArgumentError('index'));
-  if(!isConnected()) return Promise.reject(new ConnectionError(db.host));
+function removeIndex(index) {
+  if (!index) return Promise.reject(new MissingArgumentError('index'));
+  if (!isConnected()) return Promise.reject(new ConnectionError(db.host));
 
-  return db.client.indices.delete({index: index}).catch(function(){});
+  return db.client.indices.delete({index: index}).catch(function () {
+  });
 }
 
-function model(modelName, schema){
-  if(!modelName) throw new MissingArgumentError('modelName');
-  if(schema && !(schema instanceof Schema)) throw new errors.ElasticsearchError('Invalid schema for "'+modelName+'".');
+function model(modelName, schema) {
+  if (!modelName) throw new MissingArgumentError('modelName');
+  if (schema && !(schema instanceof Schema)) throw new errors.ElasticsearchError('Invalid schema for "' + modelName + '".');
 
-  if(db.models[modelName]){
+  if (db.models[modelName]) {
 
     // don't overwrite schemas on secondary calls.
-    if(schema && _.isEmpty(db.models[modelName].model.schema)){
+    if (schema && _.isEmpty(db.models[modelName].model.schema)) {
       db.models[modelName].model.schema = schema;
     }
 
@@ -120,14 +132,15 @@ function model(modelName, schema){
   }
 
   // create a neweable function object.
-  function modelInstance(data){
-    var self = this;
+  function modelInstance(data) {
+    let self = this;
     // Add any user supplied schema instance methods.
-    if(schema){
+    if (schema) {
       _.assign(self, schema.methods);
     }
     Model.call(self, data);
   }
+
   utils.inherits(modelInstance, Model);
 
   // add crud/query static functions.
@@ -141,20 +154,21 @@ function model(modelName, schema){
     constructor: modelInstance
   };
 
-  if(schema) {
+  if (schema) {
     modelInstance.model.schema = schema;
     // Add any user supplied schema static methods.
     _.assign(modelInstance, schema.statics);
 
     // User can provide their own type name, default is pluralized.
-    if(schema.options.type) modelInstance.model.type = schema.options.type;
+    if (schema.options.type) modelInstance.model.type = schema.options.type;
 
     // Update the mapping asynchronously.
-    var mapping = {};
+    let mapping = {};
     mapping[modelInstance.model.type] = schema.toMapping();
+
     mappingQueue.push({type: modelInstance.model.type, mapping: mapping});
     // If we're already connected process the mapping queue.
-    if(isConnected()){
+    if(isConnected()) {
       handleMappingQueue();
     }
   }
@@ -162,14 +176,15 @@ function model(modelName, schema){
   return db.models[modelName] = modelInstance;
 }
 
-function stats(){
-  if(!isConnected()) return Promise.reject(new ConnectionError(db.host));
-  return db.client.indices.stats({index:db.index});
+function stats() {
+  if (!isConnected()) return Promise.reject(new ConnectionError(db.host));
+  return db.client.indices.stats({index: db.index});
 }
 
 module.exports = {
   client: db.client,
   connect: connect,
+  disconnect: disconnect,
   isConnected: isConnected,
   status: status,
   stats: stats,

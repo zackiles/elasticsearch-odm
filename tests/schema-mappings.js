@@ -1,14 +1,13 @@
 'use-strict';
 
-var Schema = require('../lib/schema.js'),
-    schemaMocks = require('./fixtures/schema-mocks'),
-    _ = require('lodash'),
-    should = require('should');
+let Schema = require('../lib/schema.js'),
+  _ = require('lodash'),
+  should = require('should');
 
-describe('Schema-Mappings', function(){
+describe('Schema-Mappings', function () {
 
-  it('returns an Elasticsearch properties mapping', function(){
-    var schema = new Schema({
+  it('returns an Elasticsearch properties mapping', function () {
+    let schema = new Schema({
       name: String,
       company: {
         location: {type: String, required: true}
@@ -20,18 +19,17 @@ describe('Schema-Mappings', function(){
         }
       }]
     });
-    var mapping = schema.toMapping();
+    let mapping = schema.toMapping();
     mapping.should.have.property('properties')
       .and.have.property('name')
       .and.have.property('type', 'string');
 
     mapping.properties.should.have.property('vendors');
-
   });
 });
 
 /**
-  A multi nested document query would look like this
+ A multi nested document query would look like this
  "query" : {
     "bool" : {
        "must" : [
@@ -60,4 +58,4 @@ describe('Schema-Mappings', function(){
        ]
     }
  }
-*/
+ */

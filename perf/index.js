@@ -1,17 +1,17 @@
 'use strict';
 
-var app = require('../index'),
+let app = require('../index'),
     Promise = require('bluebird'),
     Benchmark = require('benchmark');
 
-var suite = new Benchmark.Suite;
-var Model = app.model('Book');
+let suite = new Benchmark.Suite;
+let Model = app.model('Book');
 
 app.connect('esodm-test').then(function(){
   modelSuite();
 });
 
-var ids = [];
+let ids = [];
 
 function modelSuite(){
   suite

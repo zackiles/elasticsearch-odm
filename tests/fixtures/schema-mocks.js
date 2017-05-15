@@ -7,7 +7,7 @@ module.exports = {
 };
 
 function nestedSingleLevel(){
-  var schema = {
+  let schema = {
     name: String,
     createdOn: Date,
     nestedDocumentOne: {},
@@ -89,6 +89,6 @@ function types(){
     binaryString: 'binary',
     binaryArray: ['binary'],
     binaryObjString: { type: 'binary' },
-    binaryObjArrayString: { type: ['binary'] },
+    binaryObjArrayString: { type: ['binary'] }
   };
 }
