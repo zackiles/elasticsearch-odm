@@ -15,6 +15,13 @@ let helper = function () {
 
   let testIndexName = 'eodm-test';
 
+  let hostOptions = {
+      host: 'localhost',
+      //auth: 'elastic:changeme',
+      protocol: 'http',
+      port: 9200
+    }
+  
   let testOptions = {
     // fastest index creation for elasticsearch
     settings: {
@@ -27,12 +34,16 @@ let helper = function () {
 
   let testIndexOptions = {
     index: testIndexName,
-    options: testOptions
+    options: testOptions,
+    host: [ hostOptions ]
+    // ,logging: true, 
     // ,trace: true // Trace only for dev
   };
 
   // default Elasticsearch client
-  let client = new elasticsearch.Client();
+  let client = new elasticsearch.Client({
+    host: [ hostOptions ]
+  });
 
   let latestIndex;
 
