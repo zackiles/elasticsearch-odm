@@ -1,0 +1,40 @@
+# in order to use 'trusty' dist, need this.
+# see https://docs.travis-ci.com/user/trusty-ci-environment/
+sudo: required
+
+# trust dist provides a modern build chain (as opposed to 'precise' dist)
+# which absolves us from having to install compilers and stuff
+dist: trusty
+
+language: node_js
+
+env: TARGET=test
+  # Nothing needed
+
+node_js:
+  - 'node'
+  - '7'
+
+#before_install:
+  # nothing to do
+
+#services:
+  # 1. needed to test
+  # - elasticsearch
+
+before_script:
+  # 1. ElasticSearch takes few seconds to start, to make sure it is available when the build script runs
+  # add a small delay to your build script:
+  # - sleep 10
+  # or 2. install specific version of elasticsearch
+  - curl -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.2.0.deb && sudo dpkg -i --force-confnew elasticsearch-5.2.0.deb && sudo service elasticsearch restart
+  - echo "Waiting 10sec that elaticsearch starts"
+  - sleep 10
+  - echo "check elasticsearch availability"
+  - curl http://localhost:9200
+
+script: 'npm run-script test'
+
+notifications:
+  on_success: change
+  on_failure: always

@@ -13,12 +13,22 @@
    },
   "mappings": {
     "_default_": {
-      "_id": {
-        "path": "id"
-      },
       "_all" : {
         "enabled" : true
       },
+      "dynamic_templates": [
+        {
+          "string_fields": {
+            "match": "*",
+            "match_mapping_type": "string",
+            "mapping": {
+              "index": "not_analyzed",
+              "omit_norms": true,
+              "type": "string"
+            }
+          }
+        }
+      ],
       "properties": {
         "id": {
           "type": "string",

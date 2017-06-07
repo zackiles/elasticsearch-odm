@@ -1,6 +1,11 @@
 Elasticsearch ODM
 =========
-[![npm version](https://badge.fury.io/js/elasticsearch-odm.svg)](http://badge.fury.io/js/elasticsearch-odm)
+
+[![Join the chat at https://gitter.im/bloublou2014/elasticsearch-odm](https://badges.gitter.im/bloublou2014/elasticsearch-odm.svg)](https://gitter.im/bloublou2014/elasticsearch-odm?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![npm version](https://badge.fury.io/js/elasticsearch-odm-5.svg)](http://badge.fury.io/js/elasticsearch-odm-5)
+[![Build Status](https://travis-ci.org/Epsilonn2/elasticsearch-odm.svg?branch=master)](https://travis-ci.org/Epsilonn2/elasticsearch-odm)
+[![Dependency Status](https://david-dm.org/bloublou2014/elasticsearch-odm/es-5.x.svg)](https://david-dm.org/bloublou2014/elasticsearch-odm/es-5.x)
+[![Dev Dependency Status](https://david-dm.org/bloublou2014/elasticsearch-odm/es-5.x/dev-status.svg)](https://david-dm.org/bloublou2014/elasticsearch-odm/es-5.x#info=devDependencies)
 
 ***Like Mongoose but for Elasticsearch.*** Define models, preform CRUD operations, and build advanced search queries. Most commands and functionality that exist in Mongoose exist in this library. All asynchronous functions use Bluebird Promises instead of callbacks.
 
@@ -29,12 +34,12 @@ You'll find the API is intuitive if you've used Mongoose or Waterline.
 Example (no schema):
 
 ```js
-var elasticsearch = require('elasticsearch-odm');
-var Car = elasticsearch.model('Car');
-var car = new Car({
+let esodm = require('elasticsearch-odm');
+let Car = esodm.model('Car');
+let car = new Car({
   type: 'Ford', color: 'Black'
 });
-elasticsearch.connect('my-index').then(function(){
+esodm.connect('my-index').then(function(){
   // be sure to call connect before bootstrapping your app.
   car.save().then(function(document){
     console.log(document);
@@ -44,16 +49,17 @@ elasticsearch.connect('my-index').then(function(){
 Example (using a [schema](#schemas)):
 
 ```js
-var elasticsearch = require('elasticsearch-odm');
-var carSchema = new elasticsearch.Schema({
+let esodm = require('elasticsearch-odm');
+let carSchema = new esodm.Schema({
   type: String,
   color: {type: String, required: true}
 });
-var Car = elasticsearch.model('Car', carSchema);
+let Car = esodm.model('Car', carSchema);
 ```
 ## API Reference
 - [Core](#core)
   - [`.connect(String/Object options)`](#connectstringobject-options---promise)
+  - [`.disconnect()`](#disconnect---promise)
   - [`new Schema(Object options)`](#new-schemaobject-options---schema)
   - [`.model(String modelName)`](#modelstring-modelname-optionalschema-schema---model)
   - [`.client`](#client---elasticsearch)
@@ -61,7 +67,7 @@ var Car = elasticsearch.model('Car', carSchema);
   - [`.createIndex(String index, Object mappings)`](#createindexstring-index-object-mappings)
   - [`.removeIndex(String index)`](#removeindexstring-index)
 - [Document](#document)
-  - [`.save()`](#save-document)
+  - [`.save()`](#save---document)
   - [`.remove()`](#remove)
   - [`.update(Object data)`](#updateobject-data---document)
   - [`.set(Object data)`](#setobject-data---document)
@@ -99,7 +105,7 @@ var Car = elasticsearch.model('Car', carSchema);
 Core methods can be called directly on the Elasticsearch ODM instance. These include methods to configure, connect, and get information from your Elasticsearch database. Most methods act upon the [official Elasticsearch client](https://www.npmjs.com/package/elasticsearch).
 
 ##### `.connect(String/Object options)` -> `Promise`
-Returns a promise that is reolved when the connection is complete. Can be passed a single index name, or a full configuration object. The default host is localhost:9200 when no host is provided, or just an index name is used.
+Returns a promise that is resolved when the connection is complete. Can be passed a single index name, or a full configuration object. The default host is localhost:9200 when no host is provided, or just an index name is used.
 This method should be called at the start of your application.
 
 ***If the index name does not exist, it is automatically created for you.***
@@ -110,20 +116,50 @@ Example:
 
 ```js
 // when bootstrapping your application
-var elasticsearch = require('elasticsearch-odm');
+let esodm = require('elasticsearch-odm');
 
-elasticsearch.connect({
+esodm.connect({
   host: 'localhost:9200',
   index: 'my-index',
   logging: false, // true by default when NODE_ENV=development
   syncMapping: false // see 'sync mapping' in Schemas documentation
+  trace: true, // true for elasticsearch default trace logs
   ssl: {
     ca: fs.readFileSync('./cacert.pem'),
     rejectUnauthorized: true
+  },
+  options : { // optional index settings & mappings. Override default mappings
+    settings: {
+      index: {
+        number_of_shards: 1,
+        number_of_replicas: 0
+      }
+    }
   }
 });
 // OR
-elasticsearch.connect('my-index'); // default host localhost:9200
+esodm.connect('my-index'); // default host localhost:9200
+```
+
+
+##### `.disconnect()` -> `Promise`
+Returns a promise that is resolved when the disconnection is complete.
+This method should be called to close elasticsearch connection.
+
+Example:
+
+```js
+// when bootstrapping your application
+let esodm = require('elasticsearch-odm-5');
+
+esodm.connect('my-index')
+  .then(function(){
+    // ... code here
+  })
+  .then(esodm.disconnect)
+  .then(function(){
+    console.log('disconnected');
+  });
 ```
 
 ##### `new Schema(Object options)` -> `Schema`
@@ -150,6 +186,25 @@ Like Mongoose, instances of models are considered documents, and are returned fr
 
 ##### `.save()` -> `Document`
 Saves or updates the document. If it doesn't exist it is created. Like Mongoose, Elasticsearches internal '_id' is copied to 'id' for you. If you'd like to force a custom id, you can set the id property to something before calling save(). Every document gets a createdOn and updatedOn property set with ISO-8601 formatted time.
+
+Note : In order to access document just after insertion you must add `{refresh: true}` as `save()` parameter. See [index.refresh_interval](https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#dynamic-index-settings). Force refresh has a negative impact on elasticsearch, but depending on your use it can be mandatory. 
+
+Example :
+```js
+let esodm = require('elasticsearch-odm-5');
+let Car = esodm.model('Car');
+let car = new Car({
+  type: 'Ford', color: 'Black'
+});
+esodm.connect('my-index').then(function(){
+  // be sure to call connect before bootstrapping your app.
+  car
+    .save({refresh: true}) // Save document and request Elasticsearch to refresh shard
+    .then(function(document){
+      console.log(document);
+     });
+});
+```
 
 ##### `.remove()`
 Removes the document and destroys the cuurrent document instance. No value is resolved, and missing documents are ignored.
@@ -195,6 +250,8 @@ There are four ways to call .find() and it's siblings. You can mix and match sty
 - Passing [Query Options](#query-options) (match can be set to null/empty) `.find({}, {must: {active: true, sort: 'createdOn'}}}`
 - Use chaining options (alias for QueryOptions) `.find({}).must({active: true}).sort('createdOn').then(..)`
 
+note : current version support up to 10000 results due to elasticsearch default limitations.
+
 Unlike mongoose, finding exact matches requires the fields in your mapping to be set to 'not_analyzed'. By default `{index: not_analyzed}` is added to all string fields in your Schema unless you override it.
 *Depending on the [analyzer](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-analyzers.html) in your [mapping](https://www.elastic.co/guide/en/elasticsearch/guide/current/mapping-intro.html), find queries like must, not, and matches may not find any results.*
 
@@ -207,7 +264,7 @@ returns => Found documents, or null if nothing was found.
 Example:
 
 ```js
-var Car = elasticsearch.model('Car');
+let Car = esodm.model('Car');
 
 // Simple query.
 Car.find({color: 'blue'}).then(function(results){
@@ -432,7 +489,7 @@ Example:
 // mappings will automatically be updated.
 
 // Note the various ways you can define a schema field type.
-var carSchema = new elasticsearch.Schema({
+let carSchema = new esodm.Schema({
   // native type without options
   available: Boolean,
   // Elasticsearch type without options
@@ -474,7 +531,7 @@ Schemas include pre and post hooks that function similar to Mongoose. Currently,
 Same conventions as Mongoose. Function takes a done() callback that must be called when your function is finished. `this` is scoped to the current document. assing an Error to done() will cancel the current operation. For example, in a pre 'save' hook, passing an error to done() will cause the document not to be saved and will return your error to the save() callers rejection handler.
 
 ```js
-var schema = new elasticsearch.Schema(...);
+let schema = new esodm.Schema(...);
 schema.pre('save', function(done){
   console.log(this); // this = the current document
   done(); // OR done(new Error('bad document'));
@@ -486,7 +543,7 @@ schema.pre('save', function(done){
 Same conventions as Mongoose. Does not have a done() callback. Executed after the hooked method. The first argument is the current document which may or may not be a document instance (eg. post remove only receives the raw object as the document no longer exists).
 
 ```js
-var schema = new elasticsearch.Schema(...);
+let schema = new esodm.Schema(...);
 schema.post('remove', function(document){
   console.log(document);
 });
@@ -498,7 +555,7 @@ Add methods to your schema with the same convention as Mongoose.
 
 ```js
 // Instance method.
-var schema = new elasticsearch.Schema(...);
+let schema = new esodm.Schema(...);
 
 schema.methods.getFullName = function(){
   return this.firstName + ' ' + this.lastName;
@@ -539,3 +596,6 @@ This is a library Elasticsearch desperately needed for Node.js. Currently the of
 - Performance tweak application, fix garbage collection issues, and do benchmark tests.
 - Integrate npm 'friendly' for use with expanding/collapsing parent/child documents.
 - Use [source filtering](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-get.html#get-source-filtering) instead of fields.
+
+Elasticsearch 2.x :
+- Find requests : use scroll api in order to get more than 10000 results if needed

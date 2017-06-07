@@ -1,3 +1,41 @@
+bloublou2014/elasticsearch-odm#0.3.6 / 2016-11-27
+==================
+  * Update api version to 5.0
+  * Update Elasticsearch lib
+  
+bloublou2014/elasticsearch-odm#0.3.2 / 2016-07-05
+==================
+  * Add String/not_analyzed test
+
+bloublou2014/elasticsearch-odm#0.3.1 / 2016-07-03
+==================
+  * Update dependencies
+  * Add tags for dependencies (david)
+  * Add travis tests build & tags against node 4/5/6
+  * Add .editorConfig to maintain same configuration across devs
+  * Add examples on Readme
+  * Merge default mapping & user mapping on connect()
+  * Correct tests & add an test helper
+  * Change result limit of find to 10k results instead of 999999
+  * remove _id mapping (no longer configurable on es2.x)
+  * merge b17 correction on constant_score typo error
+  * Changes on Tests :
+    - add an helper to connect, add, remove, delete index
+    - add a consistent index creation/deletation by test
+    - add requireNew dependecy to test connect/close
+    - add connection/disconnection test
+    - correction on model-consistency where promises where fired too soon and end of test was not concluant + lower test to 50 instead of 100 loops to limit testing time
+    - add test on array length before testing element [0]
+    - remove after on query-promise, replace by helper index deletation
+  * Changes on lib :
+    - add disconnect() function to close  elasticsearch connection
+    - change Readme.md to replace 'elasticsearch.' to 'esodm' for elasticsearch-odm reference
+    - update apiVersion to 2.3
+    - use options to override default mapping & settings in elasticsearch  when connecting
+    - add trace option on elasticsearch connection
+    - reformat code (beautifier based on editorConfig)
+    - update dev dependencies to should v7.1 to 9.0.2
+
 1.1.0 / 2016-08-21
 ===================
   * Add connect option 'syncMapping' to enabled/disable automatic shcema->elasticsearch put mappings. syncMapping is true by default.
