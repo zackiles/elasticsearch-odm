@@ -8,7 +8,7 @@ module.exports = {
 
 function nestedSingleLevel(){
   let schema = {
-    name: String,
+    name: 'text',
     createdOn: Date,
     nestedDocumentOne: {},
     nestedDocumentTwo: {}
@@ -20,23 +20,23 @@ function nestedSingleLevel(){
 
 function typeAsType(){
   return {
-    type: {type: String, required: true},
+    type: {type: 'text', required: true},
     nestedType: {
-      type: {type: String, required: true}
+      type: {type: 'text', required: true}
     }
   };
 }
 
 function types(){
   return {
-    string: String,
-    stringString: 'string',
-    stringArray: [String],
-    stringArrayString: ['string'],
-    stringObj: { type: String },
-    stringObjArray: { type: [String] },
-    stringObjArrayString: { type: ['string'] },
-    stringObjString: { type: 'string' },
+    string: 'text',
+    stringString: 'text',
+    stringArray: ['text'],
+    stringArrayString: ['text'],
+    stringObj: { type: 'text' },
+    stringObjArray: { type: ['text'] },
+    stringObjArrayString: { type: ['text'] },
+    stringObjString: { type: 'text' },
 
     date: Date,
     dateString: 'date',
