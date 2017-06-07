@@ -65,7 +65,7 @@ describe('Model', function () {
     it('not_analyzed default mapping properties with Schema', function (done) {
       let typeName = 'nameTestType2';
       let nameTestSchema = new app.Schema({
-        name: 'keyword',
+        name: 'text',
         test2: 'text'
       });
       let NameTestModel = app.model(typeName, nameTestSchema);
