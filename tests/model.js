@@ -65,8 +65,8 @@ describe('Model', function () {
     it('not_analyzed default mapping properties with Schema', function (done) {
       let typeName = 'nameTestType2';
       let nameTestSchema = new app.Schema({
-        name: 'text',
-        test2: 'text'
+        name: 'keyword',
+        test2: 'keyword'
       });
       let NameTestModel = app.model(typeName, nameTestSchema);
 
@@ -172,7 +172,7 @@ describe('Model', function () {
       mapping.should.have.property(Book.model.type)
         .and.have.property('properties')
         .and.have.property('author')
-        .and.have.property('type', 'text');
+        .and.have.property('type', 'keyword');
       done();
     });
 
@@ -209,7 +209,7 @@ describe('Model', function () {
     });
 
     it('it wont save a document with missing required field', function (done) {
-      let Dog = app.model('Dog', new app.Schema({breed: 'text', required: true}));
+      let Dog = app.model('Dog', new app.Schema({breed: 'keyword', required: true}));
       let dog = new Dog({breed: true});
       dog.save()
         .then(function (results) {
