@@ -65,8 +65,8 @@ describe('Model', function () {
     it('not_analyzed default mapping properties with Schema', function (done) {
       let typeName = 'nameTestType2';
       let nameTestSchema = new app.Schema({
-        name: String,
-        test2: String
+        name: 'text',
+        test2: 'text'
       });
       let NameTestModel = app.model(typeName, nameTestSchema);
 
@@ -159,7 +159,7 @@ describe('Model', function () {
   });
 
   describe('Model Schemas', function () {
-    let bookSchema = new app.Schema({author: String});
+    let bookSchema = new app.Schema({author: 'text'});
 
     it('creates a new model with schema', function (done) {
       let Book = app.model('Book', bookSchema);
@@ -193,14 +193,14 @@ describe('Model', function () {
     });
 
     it('setting options.type for schema forces a custom type name', function (done) {
-      let schema = new app.Schema({author: String}, {type: 'CustomType'});
+      let schema = new app.Schema({author: 'text'}, {type: 'CustomType'});
       let SomeModel = app.model('SomeModel', schema);
       SomeModel.model.should.have.property('type', 'CustomType');
       done();
     });
 
     it('invalidates a document with missing required field', function (done) {
-      let cdSchema = new app.Schema({author: String, name: {type: String, required: true}});
+      let cdSchema = new app.Schema({author: 'text', name: {type: 'text', required: true}});
       let CD = app.model('cd', cdSchema);
       let cd = new CD({author: 'Dr Dre'});
       let errors = cd.validate(cd.toObject());
@@ -209,7 +209,7 @@ describe('Model', function () {
     });
 
     it('it wont save a document with missing required field', function (done) {
-      let Dog = app.model('Dog', new app.Schema({breed: String, required: true}));
+      let Dog = app.model('Dog', new app.Schema({breed: 'text', required: true}));
       let dog = new Dog({breed: true});
       dog.save()
         .then(function (results) {
