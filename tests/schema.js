@@ -35,7 +35,7 @@ describe('Schema', function(){
 
   it('validates a good document', function(){
     let schema = new Schema({
-      name: String,
+      name: 'text',
       createdOn: Date
     });
     let errors = schema.validate({name: 'Jim', createdOn: new Date().toISOString()});
@@ -55,7 +55,7 @@ describe('Schema', function(){
 
   it('returns errors for a bad document', function(){
     let schema = new Schema({
-      name: String
+      name: 'text'
     });
     let errors = schema.validate({name: 44});
     should.exist(errors);
@@ -74,9 +74,9 @@ describe('Schema', function(){
 
   it('validates the type of all elements in an array', function(){
     let schema = new Schema({
-      names: [String],
+      names: ['text'],
       company: {
-        location: [String]
+        location: ['text']
       }
     });
     let errors = schema.validate({names: ['Bob', 127329], company:{location: ['234', 23839]}});
@@ -86,7 +86,7 @@ describe('Schema', function(){
 
   it('returns multiple errors for a bad document', function(){
     let schema = new Schema({
-      name: String,
+      name: 'text',
       age: Number
     });
     let errors = schema.validate({name: 44, age: '2343'});
@@ -96,9 +96,9 @@ describe('Schema', function(){
 
   it('returns errors for a bad nested document', function(){
     let schema = new Schema({
-      name: String,
+      name: 'text',
       company: {
-        location: String
+        location: 'text'
       }
     });
     let errors = schema.validate({name: 'Bob', company:{location: 234}});
@@ -108,7 +108,7 @@ describe('Schema', function(){
 
   it('returns errors for a missing required field', function(){
     let schema = new Schema({
-      name: {type: String, required: true},
+      name: {type: 'text', required: true},
       age: Number
     });
     let errors = schema.validate({age: 44});

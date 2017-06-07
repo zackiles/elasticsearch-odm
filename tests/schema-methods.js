@@ -6,7 +6,7 @@ let requireNew = require('require-new'),
   should = require('should');
 
 let schema = new app.Schema({
-  name: String
+  name: 'text'
 });
 
 schema.methods.instanceMethod = function () {

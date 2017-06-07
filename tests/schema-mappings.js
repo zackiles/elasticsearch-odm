@@ -8,21 +8,21 @@ describe('Schema-Mappings', function () {
 
   it('returns an Elasticsearch properties mapping', function () {
     let schema = new Schema({
-      name: String,
+      name: 'text',
       company: {
-        location: {type: String, required: true}
+        location: {type: 'text', required: true}
       },
       vendors: [{
-        name: String,
+        name: 'text',
         purchases: {
-          name: String
+          name: 'text'
         }
       }]
     });
     let mapping = schema.toMapping();
     mapping.should.have.property('properties')
       .and.have.property('name')
-      .and.have.property('type', 'string');
+      .and.have.property('type', 'text');
 
     mapping.properties.should.have.property('vendors');
   });
