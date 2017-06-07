@@ -200,7 +200,7 @@ describe('Model', function () {
     });
 
     it('invalidates a document with missing required field', function (done) {
-      let cdSchema = new app.Schema({author: 'text', name: {type: 'text', required: true}});
+      let cdSchema = new app.Schema({author: 'keyword', name: {type: 'keyword', required: true}});
       let CD = app.model('cd', cdSchema);
       let cd = new CD({author: 'Dr Dre'});
       let errors = cd.validate(cd.toObject());
