@@ -172,7 +172,7 @@ describe('Model', function () {
       mapping.should.have.property(Book.model.type)
         .and.have.property('properties')
         .and.have.property('author')
-        .and.have.property('type', 'string');
+        .and.have.property('type', 'text');
       done();
     });
 

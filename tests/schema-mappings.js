@@ -22,7 +22,7 @@ describe('Schema-Mappings', function () {
     let mapping = schema.toMapping();
     mapping.should.have.property('properties')
       .and.have.property('name')
-      .and.have.property('type', 'string');
+      .and.have.property('type', 'text');
 
     mapping.properties.should.have.property('vendors');
   });

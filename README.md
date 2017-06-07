@@ -3,7 +3,7 @@ Elasticsearch ODM
 
 [![Join the chat at https://gitter.im/bloublou2014/elasticsearch-odm](https://badges.gitter.im/bloublou2014/elasticsearch-odm.svg)](https://gitter.im/bloublou2014/elasticsearch-odm?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![npm version](https://badge.fury.io/js/elasticsearch-odm-5.svg)](http://badge.fury.io/js/elasticsearch-odm-5)
-https://travis-ci.org/Epsilonn2/elasticsearch-odm.svg?branch=master
+[![Build Status](https://travis-ci.org/Epsilonn2/elasticsearch-odm.svg?branch=master)](https://travis-ci.org/Epsilonn2/elasticsearch-odm)
 [![Dependency Status](https://david-dm.org/bloublou2014/elasticsearch-odm/es-5.x.svg)](https://david-dm.org/bloublou2014/elasticsearch-odm/es-5.x)
 [![Dev Dependency Status](https://david-dm.org/bloublou2014/elasticsearch-odm/es-5.x/dev-status.svg)](https://david-dm.org/bloublou2014/elasticsearch-odm/es-5.x#info=devDependencies)
 
